@@ -1,0 +1,272 @@
+=== LOTTERY PRO — GUIA COMPLETO DE ATUALIZAÇÃO (ABA ANÁLISE + TEMA CLARO) ===
+Data: 28/09/2026
+Inspirado em: dezeneiro.com.br/lotofacil
+
+Este arquivo contém os 3 passos para você atualizar seu lottery-pro.html no Bloco de Notas sem complicação.
+
+----------------------------------------------------------------------
+PASSO 1: CSS (Classes do Dezeneiro + Correção do Tema Claro)
+----------------------------------------------------------------------
+1. No Bloco de Notas (lottery-pro.html), pressione Ctrl + F e busque:
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cyan),var(--purple));border-radius:6px}
+
+2. Logo ABAIXO dessa linha, aperte Enter e cole:
+
+/* ===== UPGRADE VISUAL ANÁLISE (ESTILO DEZENEIRO) ===== */
+.analise-period-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.period-btn{padding:8px 16px;border-radius:8px;background:var(--glass);border:1px solid var(--border);color:var(--dim);font-family:var(--ft);font-size:.72rem;letter-spacing:1px;font-weight:700;cursor:pointer;transition:var(--t)}
+.period-btn:hover{color:var(--text);border-color:var(--bs)}
+.period-btn.active{background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(168,85,247,.45)}
+.top-ranking-table{width:100%;border-collapse:collapse;font-family:var(--fm);margin-top:6px}
+.top-ranking-table tr{border-bottom:1px solid var(--border);transition:var(--t)}
+.top-ranking-table tr:hover{background:rgba(0,240,255,.04)}
+.top-ranking-table td{padding:10px 12px;font-size:.86rem}
+.badge-medal{font-size:1.1rem;margin-right:6px}
+.dry-alert-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(255,138,0,.08);border:1px solid rgba(255,138,0,.35);margin-bottom:8px;font-family:var(--fm);font-size:.85rem}
+.dry-alert-card strong{color:var(--orange);font-family:var(--ft);font-size:.92rem}
+.heatmap-big-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:480px;margin:0 auto}
+.heat-big-cell{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:var(--t);border:1px solid var(--border);padding:6px;cursor:default;user-select:none}
+.heat-big-cell:hover{transform:scale(1.06);z-index:2}
+.heat-big-num{font-family:var(--ft);font-size:1.45rem;font-weight:900;line-height:1}
+.heat-big-count{font-family:var(--fm);font-size:.76rem;font-weight:700;margin-top:4px;opacity:.9}
+[data-theme="light"] .ball{background:radial-gradient(circle at 30% 25%,#e8f0fa,#c5d9f0);border-color:#0077d6;color:#0a1224}
+[data-theme="light"] .ball.selected{background:linear-gradient(135deg,#0077d6,#7c3aed);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.drawn{background:linear-gradient(135deg,#16a34a,#0077d6);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.hit{background:linear-gradient(135deg,#d81b60,#7c3aed);color:#fff;border-color:transparent}
+
+
+----------------------------------------------------------------------
+PASSO 2: HTML (Novo Painel da Análise com Top 10 e Seca)
+----------------------------------------------------------------------
+1. Pressione Ctrl + F e busque por:
+<section class="panel" id="panel-analise">
+
+2. Selecione desde:
+<section class="panel" id="panel-analise">
+até a linha:
+</section>
+(logo acima de <!-- CONSULTA -->)
+
+3. Substitua por:
+
+      <!-- ANÁLISE -->
+      <section class="panel" id="panel-analise">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+          <div>
+            <h1 style="margin:0">◈ ANÁLISE E TENDÊNCIAS</h1>
+            <p class="subtitle" style="margin:6px 0 0">Padrão visual Dezeneiro com métricas estatísticas e mapa de calor.</p>
+          </div>
+          <div class="analise-period-bar" id="analisePeriodBar">
+            <button class="period-btn active" data-period="all">Histórico Completo</button>
+            <button class="period-btn" data-period="100">Últimos 100</button>
+            <button class="period-btn" data-period="30">Últimos 30</button>
+            <button class="period-btn" data-period="2026">Ano 2026</button>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:16px">
+          <div class="stat"><div class="label">Concursos Analisados</div><div class="value cyan" id="anTotal">0</div></div>
+          <div class="stat"><div class="label">Mais Sorteada</div><div class="value pink" id="anHot">—</div></div>
+          <div class="stat"><div class="label">Mais Fria</div><div class="value purple" id="anCold">—</div></div>
+          <div class="stat"><div class="label">Soma Média</div><div class="value lime" id="anSum">—</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:16px">
+          <div class="card">
+            <h3>🔥 TOP 10 MAIS SORTEADAS</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas com maior frequência no período selecionado.</p>
+            <div id="anTopTableWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>❄️ MAIS ATRASADAS AGORA (SECA)</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas há mais sorteios consecutivos sem sair.</p>
+            <div id="anDryListWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            <h3 style="margin:0">🌡️ MAPA DE CALOR 5×5 (NÚMEROS GRANDES)</h3>
+            <span class="badge info" id="anHeatRangeInfo">25 dezenas</span>
+          </div>
+          <div class="heatmap-big-grid" id="heatmap">
+            <p class="subtitle">Sem dados.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card">
+            <h3>📊 Frequência Individual de Todas as 25</h3>
+            <div id="freqChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>⏱️ Atraso Atual de Todas as 25</h3>
+            <div id="delayChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+      </section>
+
+
+----------------------------------------------------------------------
+PASSO 3: JAVASCRIPT (Cálculos de Período, Medalhas e Mapa Grande)
+----------------------------------------------------------------------
+1. Pressione Ctrl + F e busque por:
+/* ============================================================ ANÁLISE */
+
+2. Selecione desde:
+/* ============================================================ ANÁLISE */
+até a linha antes de:
+/* ============================================================ CONSULTA */
+
+3. Substitua por:
+
+/* ============================================================ ANÁLISE */
+let currentAnalisePeriod = 'all';
+
+function getFilteredAnaliseDB(){
+  if(!S.db.length) return [];
+  if(currentAnalisePeriod === '30') return S.db.slice(-30);
+  if(currentAnalisePeriod === '100') return S.db.slice(-100);
+  if(currentAnalisePeriod === '2026'){
+    const filtrados = S.db.filter(c => {
+      if(!c.date) return false;
+      const d = (c.date instanceof Date) ? c.date : new Date(c.date);
+      return !isNaN(d.getTime()) && d.getFullYear() === 2026;
+    });
+    return filtrados.length ? filtrados : S.db;
+  }
+  return S.db;
+}
+
+function renderAnalysis(){
+  if(!S.db.length) return;
+  const dataset = getFilteredAnaliseDB();
+  const t = dataset.length;
+  if(!t) return;
+
+  const f = Array(26).fill(0);
+  const ls = Array(26).fill(-1);
+  dataset.forEach((c, i) => {
+    c.d.forEach(n => {
+      f[n]++;
+      ls[n] = i;
+    });
+  });
+
+  let hot = 1, cold = 1;
+  for(let i = 2; i <= 25; i++){
+    if(f[i] > f[hot]) hot = i;
+    if(f[i] < f[cold]) cold = i;
+  }
+
+  const avg = (dataset.reduce((s, c) => s + c.d.reduce((a, b) => a + b, 0), 0) / t).toFixed(1);
+  $('#anTotal').textContent = t + (currentAnalisePeriod !== 'all' ? ' (filtro)' : '');
+  $('#anHot').textContent = pad(hot) + ' (' + f[hot] + '×)';
+  $('#anCold').textContent = pad(cold) + ' (' + f[cold] + '×)';
+  $('#anSum').textContent = avg;
+
+  // 1. TOP 10 MAIS SORTEADAS (Medalhas 🥇 🥈 🥉)
+  const ranked = Array.from({length: 25}, (_, i) => ({n: i + 1, count: f[i + 1]}))
+    .sort((a, b) => b.count - a.count);
+  const medals = ['🥇', '🥈', '🥉', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
+  let topH = '<table class="top-ranking-table"><tbody>';
+  ranked.slice(0, 10).forEach((item, idx) => {
+    const pct = ((item.count / t) * 100).toFixed(1);
+    topH += `<tr>
+      <td style="width:40px"><span class="badge-medal">${medals[idx]}</span></td>
+      <td style="width:50px"><span class="ball small selected">${pad(item.n)}</span></td>
+      <td><strong>${item.count}×</strong></td>
+      <td style="color:var(--dim);text-align:right">${pct}% dos sorteios</td>
+    </tr>`;
+  });
+  topH += '</tbody></table>';
+  $('#anTopTableWrap').innerHTML = topH;
+
+  // 2. MAIS ATRASADAS (Linguagem natural: "seca de X sorteios")
+  const delays = Array.from({length: 25}, (_, i) => {
+    const num = i + 1;
+    const seca = ls[num] < 0 ? t : t - 1 - ls[num];
+    return {n: num, dry: seca};
+  }).sort((a, b) => b.dry - a.dry);
+
+  let dryH = '';
+  delays.slice(0, 5).forEach((item, idx) => {
+    const badgeColor = item.dry >= 5 ? 'var(--danger)' : 'var(--orange)';
+    dryH += `<div class="dry-alert-card">
+      <span class="ball small drawn">${pad(item.n)}</span>
+      <div style="flex:1">
+        <strong>Dezena ${pad(item.n)}</strong>
+        <div style="color:var(--dim);font-size:.78rem">seca de <span style="color:${badgeColor};font-weight:700">${item.dry} sorteio${item.dry === 1 ? '' : 's'}</span> consecutivos</div>
+      </div>
+      <span class="badge ${item.dry >= 4 ? 'lose' : 'info'}">atraso ${item.dry}</span>
+    </div>`;
+  });
+  $('#anDryListWrap').innerHTML = dryH;
+
+  // 3. MAPA DE CALOR 5×5 COM NÚMEROS GRANDES
+  const minF = Math.min(...f.slice(1)), maxF = Math.max(...f.slice(1));
+  const span = Math.max(1, maxF - minF);
+  $('#anHeatRangeInfo').textContent = `Mín: ${minF}× · Máx: ${maxF}×`;
+  let hm = '';
+  for(let i = 1; i <= 25; i++){
+    const t2 = (f[i] - minF) / span;
+    const r = Math.round(0 + t2 * 255);
+    const g = Math.round(240 - t2 * 215);
+    const b2 = Math.round(255 - t2 * 140);
+    const bg = `rgba(${r},${g},${b2},${0.25 + t2 * 0.50})`;
+    const br = `rgba(${r},${g},${b2},${0.55 + t2 * 0.35})`;
+    hm += `<div class="heat-big-cell" style="background:${bg};border-color:${br};box-shadow:0 0 ${Math.round(4 + t2 * 14)}px ${bg}">
+      <span class="heat-big-num">${pad(i)}</span>
+      <span class="heat-big-count">${f[i]}×</span>
+    </div>`;
+  }
+  $('#heatmap').innerHTML = hm;
+
+  // 4. BARRAS DE FREQUÊNCIA INDIVIDUAL
+  const mx = Math.max(...f.slice(1));
+  let h1 = '';
+  for(let i = 1; i <= 25; i++){
+    const p = (f[i] / mx) * 100;
+    h1 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${f[i]}×</span>
+    </div>`;
+  }
+  $('#freqChart').innerHTML = h1;
+
+  // 5. BARRAS DE ATRASO
+  let h2 = '';
+  for(let i = 1; i <= 25; i++){
+    const d = ls[i] < 0 ? t : t - 1 - ls[i];
+    const p = Math.min(100, (d / Math.max(1, t)) * 100);
+    h2 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${d}</span>
+    </div>`;
+  }
+  $('#delayChart').innerHTML = h2;
+}
+
+// Ouvintes dos botões de período da Análise
+(function initPeriodButtons(){
+  const bar = $('#analisePeriodBar');
+  if(!bar) return;
+  bar.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      bar.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentAnalisePeriod = this.dataset.period;
+      renderAnalysis();
+      if(typeof sClick === 'function') sClick();
+      toast('Período atualizado: ' + this.textContent, 'info');
+    });
+  });
+})();
+
+4. Pressione Ctrl + S para salvar o arquivo e recarregue a página no Chrome (F5).

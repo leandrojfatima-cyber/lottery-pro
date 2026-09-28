@@ -1,0 +1,42 @@
+{
+  "$schema": "https://firebase.google.com/schemas/firestore-blueprint.json",
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "plan": { "type": "string" }
+      }
+    },
+    "UserBet": {
+      "collection": "users/{userId}/bets",
+      "fields": {
+        "concurso": { "type": "number" },
+        "dezenas": { "type": "array" },
+        "cost": { "type": "number" },
+        "date": { "type": "string" },
+        "source": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      }
+    },
+    "UserConference": {
+      "collection": "users/{userId}/conferences",
+      "fields": {
+        "concurso": { "type": "number" },
+        "invested": { "type": "number" },
+        "returned": { "type": "number" },
+        "timestamp": { "type": "number" }
+      }
+    },
+    "LotteryResult": {
+      "collection": "lottery_results",
+      "fields": {
+        "concurso": { "type": "number" },
+        "dezenas": { "type": "array" },
+        "date": { "type": "string" }
+      }
+    }
+  }
+}

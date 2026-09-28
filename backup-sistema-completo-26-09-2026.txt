@@ -1,0 +1,14 @@
+=== LOTTERY PRO — Backup 26/09/2026 ===
+
+SISTEMA: C:\Users\Leandro Jose\Desktop\Loterica\lottery-pro.html
+BACKUP: C:\Users\Leandro Jose\Desktop\Loterica\lottery-pro-ANTES-DO-MANUAL.html
+
+URL: https://dezeneiro.com.br/lotofacil
+
+DADOS NO localStorage (Chrome):
+- lp_db      → 3.789 concursos
+- lp_lote    → 3 bilhetes cadastrados
+- lp_conf    → 2 conferências
+- lp_theme   → dark
+- lp_font    → inter
+- lp_roadmap → checklist do roadmap

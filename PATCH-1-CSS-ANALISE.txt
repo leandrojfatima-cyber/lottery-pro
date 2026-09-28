@@ -1,0 +1,32 @@
+=== PATCH 1 DE 3 — CSS DO UPGRADE VISUAL DA ABA ANÁLISE ===
+
+INSTRUÇÃO:
+1. Abra o arquivo lottery-pro.html no Bloco de Notas.
+2. Pressione Ctrl + F e busque por:
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cyan),var(--purple));border-radius:6px}
+
+3. Logo ABAIXO dessa linha, aperte Enter e cole o seguinte bloco:
+
+/* ===== UPGRADE VISUAL ANÁLISE (ESTILO DEZENEIRO) ===== */
+.analise-period-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.period-btn{padding:8px 16px;border-radius:8px;background:var(--glass);border:1px solid var(--border);color:var(--dim);font-family:var(--ft);font-size:.72rem;letter-spacing:1px;font-weight:700;cursor:pointer;transition:var(--t)}
+.period-btn:hover{color:var(--text);border-color:var(--bs)}
+.period-btn.active{background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(168,85,247,.45)}
+.top-ranking-table{width:100%;border-collapse:collapse;font-family:var(--fm);margin-top:6px}
+.top-ranking-table tr{border-bottom:1px solid var(--border);transition:var(--t)}
+.top-ranking-table tr:hover{background:rgba(0,240,255,.04)}
+.top-ranking-table td{padding:10px 12px;font-size:.86rem}
+.badge-medal{font-size:1.1rem;margin-right:6px}
+.dry-alert-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(255,138,0,.08);border:1px solid rgba(255,138,0,.35);margin-bottom:8px;font-family:var(--fm);font-size:.85rem}
+.dry-alert-card strong{color:var(--orange);font-family:var(--ft);font-size:.92rem}
+.heatmap-big-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:480px;margin:0 auto}
+.heat-big-cell{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:var(--t);border:1px solid var(--border);padding:6px;cursor:default;user-select:none}
+.heat-big-cell:hover{transform:scale(1.06);z-index:2}
+.heat-big-num{font-family:var(--ft);font-size:1.45rem;font-weight:900;line-height:1}
+.heat-big-count{font-family:var(--fm);font-size:.76rem;font-weight:700;margin-top:4px;opacity:.9}
+[data-theme="light"] .ball{background:radial-gradient(circle at 30% 25%,#e8f0fa,#c5d9f0);border-color:#0077d6;color:#0a1224}
+[data-theme="light"] .ball.selected{background:linear-gradient(135deg,#0077d6,#7c3aed);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.drawn{background:linear-gradient(135deg,#16a34a,#0077d6);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.hit{background:linear-gradient(135deg,#d81b60,#7c3aed);color:#fff;border-color:transparent}
+
+4. Pressione Ctrl + S para salvar o arquivo.

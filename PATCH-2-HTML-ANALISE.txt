@@ -1,0 +1,73 @@
+=== PATCH 2 DE 3 — HTML DA ABA ANÁLISE ===
+
+INSTRUÇÃO:
+1. Abra o arquivo lottery-pro.html no Bloco de Notas.
+2. Pressione Ctrl + F e busque por:
+<section class="panel" id="panel-analise">
+
+3. Selecione desde:
+<section class="panel" id="panel-analise">
+até a linha:
+</section>
+(logo antes de <!-- CONSULTA -->)
+
+4. Substitua todo esse bloco pelo seguinte código:
+
+      <!-- ANÁLISE -->
+      <section class="panel" id="panel-analise">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+          <div>
+            <h1 style="margin:0">◈ ANÁLISE E TENDÊNCIAS</h1>
+            <p class="subtitle" style="margin:6px 0 0">Padrão visual Dezeneiro com métricas estatísticas e mapa de calor.</p>
+          </div>
+          <div class="analise-period-bar" id="analisePeriodBar">
+            <button class="period-btn active" data-period="all">Histórico Completo</button>
+            <button class="period-btn" data-period="100">Últimos 100</button>
+            <button class="period-btn" data-period="30">Últimos 30</button>
+            <button class="period-btn" data-period="2026">Ano 2026</button>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:16px">
+          <div class="stat"><div class="label">Concursos Analisados</div><div class="value cyan" id="anTotal">0</div></div>
+          <div class="stat"><div class="label">Mais Sorteada</div><div class="value pink" id="anHot">—</div></div>
+          <div class="stat"><div class="label">Mais Fria</div><div class="value purple" id="anCold">—</div></div>
+          <div class="stat"><div class="label">Soma Média</div><div class="value lime" id="anSum">—</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:16px">
+          <div class="card">
+            <h3>🔥 TOP 10 MAIS SORTEADAS</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas com maior frequência no período selecionado.</p>
+            <div id="anTopTableWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>❄️ MAIS ATRASADAS AGORA (SECA)</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas há mais sorteios consecutivos sem sair.</p>
+            <div id="anDryListWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            <h3 style="margin:0">🌡️ MAPA DE CALOR 5×5 (NÚMEROS GRANDES)</h3>
+            <span class="badge info" id="anHeatRangeInfo">25 dezenas</span>
+          </div>
+          <div class="heatmap-big-grid" id="heatmap">
+            <p class="subtitle">Sem dados.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card">
+            <h3>📊 Frequência Individual de Todas as 25</h3>
+            <div id="freqChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>⏱️ Atraso Atual de Todas as 25</h3>
+            <div id="delayChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+      </section>
+
+5. Pressione Ctrl + S para salvar o arquivo.

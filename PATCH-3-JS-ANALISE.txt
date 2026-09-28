@@ -1,0 +1,162 @@
+=== PATCH 3 DE 3 — JAVASCRIPT DA ABA ANÁLISE ===
+
+INSTRUÇÃO:
+1. Abra o arquivo lottery-pro.html no Bloco de Notas.
+2. Pressione Ctrl + F e busque por:
+/* ============================================================ ANÁLISE */
+
+3. Selecione a partir dessa linha até o final da função renderAnalysis(), que termina logo antes de:
+/* ============================================================ CONSULTA */
+
+4. Substitua esse bloco de código pelo seguinte:
+
+/* ============================================================ ANÁLISE */
+let currentAnalisePeriod = 'all';
+
+function getFilteredAnaliseDB(){
+  if(!S.db.length) return [];
+  if(currentAnalisePeriod === '30') return S.db.slice(-30);
+  if(currentAnalisePeriod === '100') return S.db.slice(-100);
+  if(currentAnalisePeriod === '2026'){
+    const filtrados = S.db.filter(c => {
+      if(!c.date) return false;
+      const d = (c.date instanceof Date) ? c.date : new Date(c.date);
+      return !isNaN(d.getTime()) && d.getFullYear() === 2026;
+    });
+    return filtrados.length ? filtrados : S.db;
+  }
+  return S.db;
+}
+
+function renderAnalysis(){
+  if(!S.db.length) return;
+  const dataset = getFilteredAnaliseDB();
+  const t = dataset.length;
+  if(!t) return;
+
+  const f = Array(26).fill(0);
+  const ls = Array(26).fill(-1);
+  dataset.forEach((c, i) => {
+    c.d.forEach(n => {
+      f[n]++;
+      ls[n] = i;
+    });
+  });
+
+  let hot = 1, cold = 1;
+  for(let i = 2; i <= 25; i++){
+    if(f[i] > f[hot]) hot = i;
+    if(f[i] < f[cold]) cold = i;
+  }
+
+  const avg = (dataset.reduce((s, c) => s + c.d.reduce((a, b) => a + b, 0), 0) / t).toFixed(1);
+  $('#anTotal').textContent = t + (currentAnalisePeriod !== 'all' ? ' (filtro)' : '');
+  $('#anHot').textContent = pad(hot) + ' (' + f[hot] + '×)';
+  $('#anCold').textContent = pad(cold) + ' (' + f[cold] + '×)';
+  $('#anSum').textContent = avg;
+
+  // 1. TOP 10 MAIS SORTEADAS (Medalhas 🥇 🥈 🥉)
+  const ranked = Array.from({length: 25}, (_, i) => ({n: i + 1, count: f[i + 1]}))
+    .sort((a, b) => b.count - a.count);
+  const medals = ['🥇', '🥈', '🥉', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
+  let topH = '<table class="top-ranking-table"><tbody>';
+  ranked.slice(0, 10).forEach((item, idx) => {
+    const pct = ((item.count / t) * 100).toFixed(1);
+    topH += `<tr>
+      <td style="width:40px"><span class="badge-medal">${medals[idx]}</span></td>
+      <td style="width:50px"><span class="ball small selected">${pad(item.n)}</span></td>
+      <td><strong>${item.count}×</strong></td>
+      <td style="color:var(--dim);text-align:right">${pct}% dos sorteios</td>
+    </tr>`;
+  });
+  topH += '</tbody></table>';
+  $('#anTopTableWrap').innerHTML = topH;
+
+  // 2. MAIS ATRASADAS (Linguagem natural: "seca de X sorteios")
+  const delays = Array.from({length: 25}, (_, i) => {
+    const num = i + 1;
+    const seca = ls[num] < 0 ? t : t - 1 - ls[num];
+    return {n: num, dry: seca};
+  }).sort((a, b) => b.dry - a.dry);
+
+  let dryH = '';
+  delays.slice(0, 5).forEach((item, idx) => {
+    const badgeColor = item.dry >= 5 ? 'var(--danger)' : 'var(--orange)';
+    dryH += `<div class="dry-alert-card">
+      <span class="ball small drawn">${pad(item.n)}</span>
+      <div style="flex:1">
+        <strong>Dezena ${pad(item.n)}</strong>
+        <div style="color:var(--dim);font-size:.78rem">seca de <span style="color:${badgeColor};font-weight:700">${item.dry} sorteio${item.dry === 1 ? '' : 's'}</span> consecutivos</div>
+      </div>
+      <span class="badge ${item.dry >= 4 ? 'lose' : 'info'}">atraso ${item.dry}</span>
+    </div>`;
+  });
+  $('#anDryListWrap').innerHTML = dryH;
+
+  // 3. MAPA DE CALOR 5×5 COM NÚMEROS GRANDES
+  const minF = Math.min(...f.slice(1)), maxF = Math.max(...f.slice(1));
+  const span = Math.max(1, maxF - minF);
+  $('#anHeatRangeInfo').textContent = `Mín: ${minF}× · Máx: ${maxF}×`;
+  let hm = '';
+  for(let i = 1; i <= 25; i++){
+    const t2 = (f[i] - minF) / span;
+    const r = Math.round(0 + t2 * 255);
+    const g = Math.round(240 - t2 * 215);
+    const b2 = Math.round(255 - t2 * 140);
+    const bg = `rgba(${r},${g},${b2},${0.25 + t2 * 0.50})`;
+    const br = `rgba(${r},${g},${b2},${0.55 + t2 * 0.35})`;
+    hm += `<div class="heat-big-cell" style="background:${bg};border-color:${br};box-shadow:0 0 ${Math.round(4 + t2 * 14)}px ${bg}">
+      <span class="heat-big-num">${pad(i)}</span>
+      <span class="heat-big-count">${f[i]}×</span>
+    </div>`;
+  }
+  $('#heatmap').innerHTML = hm;
+
+  // 4. BARRAS DE FREQUÊNCIA INDIVIDUAL
+  const mx = Math.max(...f.slice(1));
+  let h1 = '';
+  for(let i = 1; i <= 25; i++){
+    const p = (f[i] / mx) * 100;
+    h1 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${f[i]}×</span>
+    </div>`;
+  }
+  $('#freqChart').innerHTML = h1;
+
+  // 5. BARRAS DE ATRASO
+  let h2 = '';
+  for(let i = 1; i <= 25; i++){
+    const d = ls[i] < 0 ? t : t - 1 - ls[i];
+    const p = Math.min(100, (d / Math.max(1, t)) * 100);
+    h2 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${d}</span>
+    </div>`;
+  }
+  $('#delayChart').innerHTML = h2;
+}
+
+// Ouvintes dos botões de período da Análise
+(function initPeriodButtons(){
+  const bar = $('#analisePeriodBar');
+  if(!bar) return;
+  bar.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      bar.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentAnalisePeriod = this.dataset.period;
+      renderAnalysis();
+      if(typeof sClick === 'function') sClick();
+      toast('Período atualizado: ' + this.textContent, 'info');
+    });
+  });
+})();
+
+5. Pressione Ctrl + S para salvar o arquivo.

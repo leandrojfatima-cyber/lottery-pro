@@ -1,0 +1,86 @@
+=== PATCH — BILHETES: ACUMULAR POR CONCURSO SEM APAGAR OS ANTERIORES ===
+Data: 28/09/2026
+
+OBJETIVO:
+Permitir gerar bilhetes automáticos para o próximo concurso acumulando com os bilhetes já existentes, sem apagar o histórico de concursos passados já conferidos.
+
+----------------------------------------------------------------------
+INSTRUÇÃO NO BLOCO DE NOTAS (lottery-pro.html):
+----------------------------------------------------------------------
+1. Pressione Ctrl + F e busque por:
+/* ===== Gerar Lote ===== */
+
+2. Localize o bloco da função:
+$('#btnGerarLote').addEventListener('click',()=>{
+  ...
+});
+
+3. Substitua esse bloco inteiro pelo código abaixo:
+
+/* ===== Gerar Lote (Acumula sem apagar concursos anteriores) ===== */
+$('#btnGerarLote').addEventListener('click',()=>{
+  const ini=Math.max(1,+$('#bConcIni').value||1);
+  const nc=Math.max(1,Math.min(100,+$('#bConc').value||5));
+  const np=Math.max(1,Math.min(20,+$('#bPer').value||3));
+  const size=+$('#bSize').value||15;
+  const m=$('#bMethod').value;
+  COST=parseFloat($('#bCost').value)||3.5;
+
+  let substituir = false;
+  if(S.lote.length > 0){
+    const resp = confirm(
+      `Você já possui ${S.lote.length} concurso(s) com bilhetes cadastrados.\n\n` +
+      `• Clique em [OK] para ADICIONAR os novos bilhetes sem apagar os anteriores (Recomendado).\n` +
+      `• Clique em [Cancelar] se preferir SUBSTITUIR e apagar tudo.`
+    );
+    if(!resp){
+      if(!confirm('Tem certeza de que deseja APAGAR TODOS os bilhetes anteriores e começar do zero?')) return;
+      substituir = true;
+    }
+  }
+
+  if(substituir){
+    S.lote = [];
+    S.conferencias = {};
+  }
+
+  let novosTotal = 0;
+  for(let c=0;c<nc;c++){
+    const conc = ini+c;
+    const bil=[];
+    for(let i=0;i<np;i++){
+      bil.push(genByMethod(m,size));
+      novosTotal++;
+    }
+
+    let group = S.lote.find(g => g.concurso === conc);
+    if(group){
+      bil.forEach(b => group.bilhetes.push(b));
+      group.costUnit = COST;
+      if(!group.date) group.date = dataDoConcurso(conc);
+    } else {
+      S.lote.push({
+        concurso: conc,
+        bilhetes: bil,
+        costUnit: COST,
+        date: dataDoConcurso(conc),
+        source: 'generated'
+      });
+    }
+  }
+
+  S.lote.sort((a,b)=>a.concurso-b.concurso);
+  saveLote();
+  renderLote();
+  updateDash();
+
+  const total = S.lote.reduce((s,g)=>s+g.bilhetes.length, 0);
+  $('#bTotal').textContent = total;
+  $('#bCusto').textContent = fmt(total * COST);
+  $('#bMetodo').textContent = m.toUpperCase();
+
+  toast(`✅ ${novosTotal} bilhete(s) gerado(s) e adicionados com sucesso!`, 'success');
+  sBig();
+});
+
+4. Pressione Ctrl + S para salvar o arquivo.

@@ -1,0 +1,2775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOTTERY PRO</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&family=Exo+2:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060b;--panel:rgba(14,20,38,.7);--solid:#0e1426;--glass:rgba(20,30,55,.45);--border:rgba(0,240,255,.15);--bs:rgba(0,240,255,.55);--text:#eaf2ff;--dim:#7f8ba8;--cyan:#00f0ff;--pink:#ff1e8e;--purple:#a855f7;--lime:#39ff14;--orange:#ff8a00;--danger:#ff3355;--warn:#f59e0b;--glow-c:0 0 22px rgba(0,240,255,.55);--glow-p:0 0 22px rgba(255,30,142,.55);--r:14px;--t:.25s cubic-bezier(.4,0,.2,1);--f:'Inter',system-ui,sans-serif;--ft:'Orbitron','Inter',sans-serif;--fm:'JetBrains Mono',monospace}
+[data-theme="light"]{--bg:#eef2f9;--panel:rgba(255,255,255,.85);--solid:#fff;--glass:rgba(255,255,255,.55);--border:rgba(0,100,200,.18);--bs:rgba(0,100,200,.5);--text:#0a1224;--dim:#5b6b88;--cyan:#0077d6;--pink:#d81b60;--purple:#7c3aed;--lime:#16a34a;--glow-c:0 0 16px rgba(0,119,214,.3);--glow-p:0 0 16px rgba(216,27,96,.3)}
+[data-font="orbitron"]{--f:'Orbitron',sans-serif}[data-font="rajdhani"]{--f:'Rajdhani',sans-serif}[data-font="exo"]{--f:'Exo 2',sans-serif}[data-font="jetbrains"]{--f:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--text);overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,240,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+body::after{content:"";position:fixed;inset:0;background:radial-gradient(1100px 550px at 8% -8%,rgba(0,240,255,.14),transparent 60%),radial-gradient(900px 500px at 108% 12%,rgba(255,30,142,.12),transparent 60%),radial-gradient(900px 700px at 50% 118%,rgba(168,85,247,.12),transparent 60%);pointer-events:none;z-index:0}
+[data-theme="light"] body::after{opacity:.35}
+.app{position:relative;z-index:1;display:grid;grid-template-rows:68px 1fr 28px;height:100vh}
+.topbar{display:flex;align-items:center;gap:14px;padding:0 20px;background:linear-gradient(180deg,rgba(8,12,24,.95),rgba(8,12,24,.7));backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:relative}
+.topbar::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),transparent);opacity:.7}
+[data-theme="light"] .topbar{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.7))}
+.logo{display:flex;align-items:center;gap:12px;user-select:none}
+.logo-mark{width:42px;height:42px;filter:drop-shadow(0 0 12px var(--cyan))}
+.logo-text{font-family:var(--ft);font-weight:900;font-size:1.05rem;letter-spacing:2.5px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo-sub{font-size:.6rem;color:var(--dim);letter-spacing:3px;margin-top:2px}
+.status-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--glass);font-size:.72rem;color:var(--dim);font-family:var(--fm)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
+.topbar-spacer{flex:1}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer;transition:var(--t)}
+.icon-btn:hover{border-color:var(--bs);box-shadow:var(--glow-c);transform:translateY(-2px)}
+.icon-btn.active{border-color:var(--cyan);box-shadow:var(--glow-c);color:var(--cyan)}
+.icon-btn svg{width:18px;height:18px}
+.main{display:grid;grid-template-columns:230px 1fr;overflow:hidden}
+.sidebar{background:var(--panel);backdrop-filter:blur(20px);border-right:1px solid var(--border);padding:16px 12px;overflow-y:auto}
+.sidebar-title{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:2.5px;padding:12px 12px 6px;font-family:var(--fm)}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:var(--dim);cursor:pointer;font-weight:600;font-size:.9rem;border:1px solid transparent;transition:var(--t);user-select:none;position:relative;margin-bottom:3px}
+.nav-item:hover{color:var(--text);background:rgba(0,240,255,.06);border-color:var(--border)}
+.nav-item.active{color:var(--text);background:linear-gradient(90deg,rgba(0,240,255,.16),rgba(255,30,142,.06));border-color:var(--bs);box-shadow:var(--glow-c)}
+.nav-item.active::before{content:"";position:absolute;left:-1px;top:20%;bottom:20%;width:3px;background:var(--cyan);border-radius:2px;box-shadow:0 0 10px var(--cyan)}
+.nav-item .ico{width:20px;height:20px;flex:0 0 20px}
+.nav-badge{margin-left:auto;font-size:.62rem;padding:2px 7px;border-radius:999px;background:var(--pink);color:#fff;font-family:var(--fm);box-shadow:0 0 10px var(--pink)}
+.nav-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:12px 8px}
+.content{overflow-y:auto;padding:26px 32px 80px;position:relative}
+.panel{display:none}.panel.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.footer{display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--panel);border-top:1px solid var(--border);font-size:.68rem;color:var(--dim);font-family:var(--fm);letter-spacing:1px}
+.footer .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--lime);margin-right:6px}
+h1{font-family:var(--ft);font-size:1.5rem;letter-spacing:1.5px;margin-bottom:4px;background:linear-gradient(90deg,var(--text),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-family:var(--ft);font-size:.92rem;letter-spacing:1.8px;text-transform:uppercase;margin:24px 0 14px;display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:4px;height:18px;background:linear-gradient(180deg,var(--cyan),var(--pink));border-radius:2px;box-shadow:var(--glow-c)}
+h3{font-family:var(--ft);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.subtitle{color:var(--dim);font-size:.88rem;margin-bottom:18px}
+.card{background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.35}
+.grid{display:grid;gap:14px}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1000px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}@media (max-width:640px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.stat{background:var(--solid);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+.stat .label{color:var(--dim);font-size:.68rem;text-transform:uppercase;letter-spacing:2px;font-family:var(--fm)}
+.stat .value{font-family:var(--ft);font-size:1.7rem;font-weight:800;margin-top:6px;letter-spacing:1px}
+.stat .value.cyan{color:var(--cyan);text-shadow:var(--glow-c)}.stat .value.pink{color:var(--pink)}.stat .value.purple{color:var(--purple)}.stat .value.lime{color:var(--lime)}.stat .value.orange{color:var(--orange)}.stat .value.danger{color:var(--danger)}
+label.field{display:block;margin-bottom:10px}label.field span{display:block;color:var(--dim);font-size:.68rem;margin-bottom:6px;text-transform:uppercase;letter-spacing:1.8px;font-family:var(--fm)}
+input,select{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--fm);font-size:.9rem;transition:var(--t);outline:none}
+[data-theme="light"] input,[data-theme="light"] select{background:rgba(255,255,255,.85)}
+input:focus,select:focus{border-color:var(--cyan);box-shadow:var(--glow-c)}select{cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;border:1px solid var(--bs);background:var(--glass);color:var(--text);font-family:var(--ft);font-weight:700;font-size:.76rem;letter-spacing:1.5px;cursor:pointer;transition:var(--t);text-transform:uppercase}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow-c)}
+.btn.primary{background:linear-gradient(90deg,var(--cyan),var(--purple));border-color:transparent;color:#04121e}
+.btn.pink{background:linear-gradient(90deg,var(--pink),var(--purple));border-color:transparent;color:#fff}
+.btn.lime{background:linear-gradient(90deg,var(--lime),var(--cyan));border-color:transparent;color:#031a08}
+.btn.ghost{background:transparent;border-color:var(--border)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.small{padding:7px 12px;font-size:.68rem;letter-spacing:1px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.ball{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#1d2a48,#070c18);border:1px solid var(--bs);color:var(--text);font-family:var(--ft);font-weight:700;font-size:.78rem;box-shadow:inset 0 0 12px rgba(0,240,255,.14);transition:var(--t);cursor:pointer;user-select:none}
+.ball.small{width:28px;height:28px;font-size:.68rem;cursor:default}
+.ball.tiny{width:24px;height:24px;font-size:.62rem;cursor:default}
+.ball.selected{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#04121e;border-color:transparent;box-shadow:0 0 16px rgba(0,240,255,.7)}
+.ball.drawn{background:linear-gradient(135deg,var(--lime),var(--cyan));color:#031a08;border-color:transparent;box-shadow:0 0 16px rgba(57,255,20,.7)}
+.ball.hit{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(255,30,142,.7)}
+.ball-group{display:flex;flex-wrap:wrap;gap:4px}
+.ball-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;justify-items:center}
+.ball-grid.conference{grid-template-columns:repeat(5,1fr);gap:8px;max-width:280px}
+@media (max-width:700px){.ball-grid{grid-template-columns:repeat(5,1fr)}}
+.dropzone{border:2px dashed var(--bs);border-radius:16px;padding:50px 30px;text-align:center;cursor:pointer;transition:var(--t);background:linear-gradient(135deg,rgba(0,240,255,.04),rgba(168,85,247,.04));position:relative;overflow:hidden}
+.dropzone:hover{border-color:var(--cyan);box-shadow:var(--glow-c);transform:translateY(-2px)}
+.dropzone.drag{border-color:var(--cyan);background:linear-gradient(135deg,rgba(0,240,255,.12),rgba(168,85,247,.12));box-shadow:0 0 40px rgba(0,240,255,.4)}
+.dropzone svg{width:64px;height:64px;color:var(--cyan);filter:drop-shadow(0 0 10px var(--cyan));margin-bottom:16px}
+.dropzone .dz-title{font-family:var(--ft);font-size:1.1rem;letter-spacing:1.5px;margin-bottom:8px;color:var(--text)}
+.dropzone .dz-sub{color:var(--dim);font-size:.85rem;margin-bottom:4px}
+.dropzone .dz-formats{display:inline-flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+.dropzone .dz-formats span{padding:4px 12px;border-radius:999px;background:rgba(0,240,255,.12);border:1px solid var(--bs);color:var(--cyan);font-family:var(--fm);font-size:.72rem;font-weight:700}
+.dropzone.loading{pointer-events:none;border-color:var(--purple)}
+.spinner{width:56px;height:56px;margin:0 auto 16px;border:3px solid rgba(168,85,247,.2);border-top-color:var(--purple);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.file-preview{display:flex;align-items:center;gap:14px;padding:16px;border-radius:12px;background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.35);margin-top:14px}
+.file-preview svg{width:32px;height:32px;color:var(--lime);flex:0 0 32px}
+.file-preview .file-info{flex:1;min-width:0}
+.file-preview .file-name{font-family:var(--fm);font-weight:700;font-size:.85rem;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-preview .file-meta{color:var(--dim);font-size:.72rem;font-family:var(--fm)}
+.file-preview .file-status{color:var(--lime);font-family:var(--fm);font-size:.72rem;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:.85rem;font-family:var(--fm)}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+th{color:var(--dim);font-weight:600;text-transform:uppercase;font-size:.68rem;letter-spacing:1.8px;position:sticky;top:0;background:var(--solid);z-index:2}
+tbody tr:hover{background:rgba(0,240,255,.05)}
+.db-table-wrap{max-height:600px;overflow:auto;border:1px solid var(--border);border-radius:12px}
+.db-table-wrap table{margin:0}.db-table-wrap td:first-child{font-weight:700;color:var(--cyan);width:80px}
+.pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.pagination button{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--glass);color:var(--text);cursor:pointer;font-family:var(--fm);font-size:.8rem;transition:var(--t)}
+.pagination button:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+.pagination button.active{background:var(--cyan);color:#04121e;border-color:transparent;font-weight:700}
+.pagination button:disabled{opacity:.3;cursor:not-allowed}
+.pagination .info{color:var(--dim);font-size:.8rem;font-family:var(--fm)}
+.toast-wrap{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:10px;z-index:999}
+.toast{background:var(--solid);border:1px solid var(--bs);border-left:3px solid var(--cyan);border-radius:10px;padding:12px 16px;min-width:280px;box-shadow:var(--glow-c);animation:toastIn .35s ease;font-size:.85rem;font-family:var(--fm)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+.toast.success{border-left-color:var(--lime)}.toast.error{border-left-color:var(--danger)}.toast.warn{border-left-color:var(--warn)}
+.progress{height:6px;width:100%;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.progress>span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--pink));transition:width .25s}
+.hint{background:linear-gradient(90deg,rgba(0,240,255,.06),transparent);border-left:3px solid var(--cyan);padding:11px 14px;border-radius:0 8px 8px 0;font-size:.84rem;color:var(--dim);margin-bottom:12px}
+.hint strong{color:var(--text)}
+.hint.pink{border-left-color:var(--pink);background:linear-gradient(90deg,rgba(255,30,142,.06),transparent)}
+.hint.lime{border-left-color:var(--lime);background:linear-gradient(90deg,rgba(57,255,20,.06),transparent)}
+.hint.warn{border-left-color:var(--warn);background:linear-gradient(90deg,rgba(245,158,11,.06),transparent)}
+.step{display:flex;gap:14px;padding:14px;border-radius:12px;background:var(--glass);border:1px solid var(--border);margin-bottom:10px;transition:var(--t)}
+.step:hover{border-color:var(--bs);transform:translateX(4px);background:rgba(0,240,255,.08)}
+.step-num{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#04121e;font-family:var(--ft);font-weight:900;box-shadow:var(--glow-c)}
+.step-body{flex:1}.step-title{font-weight:700;margin-bottom:4px}.step-text{font-size:.84rem;color:var(--dim)}
+pre.diag{background:rgba(0,0,0,.5);border:1px solid var(--danger);border-radius:10px;padding:14px;font-family:var(--fm);font-size:.7rem;color:var(--text);overflow:auto;max-height:400px;line-height:1.6;white-space:pre}
+[data-theme="light"] pre.diag{background:rgba(0,0,0,.06)}
+.ticket{background:var(--solid);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;position:relative;overflow:hidden}
+.ticket::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+.ticket.win{border-color:var(--lime);box-shadow:0 0 16px rgba(57,255,20,.3)}
+.ticket.win::before{background:linear-gradient(90deg,var(--lime),var(--cyan))}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.ticket-id{font-family:var(--ft);font-weight:900;font-size:.85rem;letter-spacing:1.2px;color:var(--cyan)}
+.ticket-meta{font-family:var(--fm);font-size:.68rem;color:var(--dim);text-align:right;line-height:1.4}
+.ticket-result{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-family:var(--fm);font-size:.78rem}
+.ticket-result .score{font-family:var(--ft);font-weight:900;font-size:1.1rem;letter-spacing:1px}
+.ticket-result .score.win{color:var(--lime)}
+.ticket-result .score.lose{color:var(--dim)}
+.ticket-result .prize{color:var(--lime);font-weight:700}
+.conference-panel{background:linear-gradient(135deg,rgba(57,255,20,.04),rgba(0,240,255,.04));border:1px solid rgba(57,255,20,.3);border-radius:12px;padding:18px;margin-top:14px}
+.prize-table td input{width:100%;padding:6px 8px;font-size:.8rem}
+.badge{padding:3px 10px;border-radius:999px;font-family:var(--fm);font-size:.68rem;font-weight:700;letter-spacing:.5px;display:inline-block}
+.badge.win{background:rgba(57,255,20,.15);color:var(--lime);border:1px solid rgba(57,255,20,.4)}
+.badge.lose{background:rgba(127,139,168,.12);color:var(--dim);border:1px solid var(--border)}
+.badge.pending{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.badge.info{background:rgba(0,240,255,.15);color:var(--cyan);border:1px solid rgba(0,240,255,.4)}
+.badge.done{background:rgba(57,255,20,.15);color:var(--lime);border:1px solid rgba(57,255,20,.4)}
+.badge.testing{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.badge.todo{background:rgba(127,139,168,.12);color:var(--dim);border:1px solid var(--border)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:10px 18px;border-radius:10px 10px 0 0;background:transparent;border:1px solid transparent;border-bottom:none;color:var(--dim);font-family:var(--ft);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:var(--t);font-weight:700}
+.tab:hover{color:var(--text)}.tab.active{color:var(--cyan);border-color:var(--bs);background:linear-gradient(180deg,rgba(0,240,255,.12),transparent)}
+.tab-content{display:none}.tab-content.active{display:block}
+.report-row{display:grid;grid-template-columns:70px 90px 1fr 60px 90px;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);font-family:var(--fm);font-size:.82rem;transition:var(--t)}
+.report-row:hover{background:rgba(0,240,255,.05)}
+.report-row .conc{font-family:var(--ft);font-weight:800;color:var(--cyan);letter-spacing:1px}
+.report-row .pts{font-family:var(--ft);font-weight:900;text-align:center;letter-spacing:1px}
+.report-row .pts.p15{color:#ffd700}
+.report-row .pts.p14{color:var(--lime)}
+.report-row .pts.p13{color:var(--cyan)}
+.report-row .pts.p12{color:var(--purple)}
+.report-row .pts.p11{color:var(--dim)}
+.duplicate-card{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,30,142,.06));border:1px solid rgba(255,215,0,.4);border-radius:12px;padding:16px;margin-bottom:12px}
+.duplicate-card h4{font-family:var(--ft);color:#ffd700;font-size:.85rem;letter-spacing:1.2px;margin-bottom:10px;text-transform:uppercase}
+.roadmap-phase{background:var(--solid);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.roadmap-phase::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink))}
+.roadmap-phase h3{color:var(--cyan);font-family:var(--ft);font-size:.85rem;letter-spacing:1.5px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.roadmap-item{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.2);margin-bottom:6px;border:1px solid transparent;transition:var(--t);cursor:pointer}
+[data-theme="light"] .roadmap-item{background:rgba(0,0,0,.03)}
+.roadmap-item:hover{border-color:var(--bs);background:rgba(0,240,255,.05)}
+.roadmap-item.done{opacity:.65}
+.roadmap-item.done .roadmap-title{text-decoration:line-through}
+.roadmap-check{width:24px;height:24px;border-radius:6px;border:2px solid var(--border);display:grid;place-items:center;font-size:.9rem;transition:var(--t);user-select:none}
+.roadmap-item.done .roadmap-check{background:var(--lime);border-color:var(--lime);color:#031a08}
+.roadmap-title{font-family:var(--fm);font-size:.82rem;color:var(--text)}
+.roadmap-title strong{color:var(--cyan);font-family:var(--ft);letter-spacing:.5px;margin-right:6px}
+.roadmap-badge{font-family:var(--fm);font-size:.65rem;padding:3px 8px;border-radius:999px;font-weight:700;white-space:nowrap}
+.roadmap-badge.high{background:rgba(255,30,142,.15);color:var(--pink);border:1px solid rgba(255,30,142,.4)}
+.roadmap-badge.med{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.roadmap-badge.low{background:rgba(127,139,168,.12);color:var(--dim);border:1px solid var(--border)}
+.roadmap-badge.adv{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.4)}
+.roadmap-badge.done{background:rgba(57,255,20,.15);color:var(--lime);border:1px solid rgba(57,255,20,.4)}
+.roadmap-badge.testing{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cyan),var(--purple));border-radius:6px}
+
+/* ===== UPGRADE VISUAL ANÁLISE (ESTILO DEZENEIRO) ===== */
+.analise-period-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.period-btn{padding:8px 16px;border-radius:8px;background:var(--glass);border:1px solid var(--border);color:var(--dim);font-family:var(--ft);font-size:.72rem;letter-spacing:1px;font-weight:700;cursor:pointer;transition:var(--t)}
+.period-btn:hover{color:var(--text);border-color:var(--bs)}
+.period-btn.active{background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(168,85,247,.45)}
+.top-ranking-table{width:100%;border-collapse:collapse;font-family:var(--fm);margin-top:6px}
+.top-ranking-table tr{border-bottom:1px solid var(--border);transition:var(--t)}
+.top-ranking-table tr:hover{background:rgba(0,240,255,.04)}
+.top-ranking-table td{padding:10px 12px;font-size:.86rem}
+.badge-medal{font-size:1.1rem;margin-right:6px}
+.dry-alert-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(255,138,0,.08);border:1px solid rgba(255,138,0,.35);margin-bottom:8px;font-family:var(--fm);font-size:.85rem}
+.dry-alert-card strong{color:var(--orange);font-family:var(--ft);font-size:.92rem}
+.heatmap-big-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:480px;margin:0 auto}
+.heat-big-cell{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:var(--t);border:1px solid var(--border);padding:6px;cursor:default;user-select:none}
+.heat-big-cell:hover{transform:scale(1.06);z-index:2}
+.heat-big-num{font-family:var(--ft);font-size:1.45rem;font-weight:900;line-height:1}
+.heat-big-count{font-family:var(--fm);font-size:.76rem;font-weight:700;margin-top:4px;opacity:.9}
+[data-theme="light"] .ball{background:radial-gradient(circle at 30% 25%,#e8f0fa,#c5d9f0);border-color:#0077d6;color:#0a1224}
+[data-theme="light"] .ball.selected{background:linear-gradient(135deg,#0077d6,#7c3aed);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.drawn{background:linear-gradient(135deg,#16a34a,#0077d6);color:#fff;border-color:transparent}
+[data-theme="light"] .ball.hit{background:linear-gradient(135deg,#d81b60,#7c3aed);color:#fff;border-color:transparent}
+
+/* ===== MANUAL ===== */
+.manual-layout{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:flex-start;margin-top:16px}
+@media (max-width:900px){.manual-layout{grid-template-columns:1fr}}
+.manual-toc{position:sticky;top:0;background:var(--solid);border:1px solid var(--border);border-radius:12px;padding:14px;max-height:calc(100vh - 160px);overflow-y:auto}
+.manual-toc h4{font-family:var(--ft);font-size:.72rem;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+.manual-toc-item{display:block;padding:8px 10px;border-radius:8px;color:var(--dim);font-size:.82rem;font-family:var(--fm);cursor:pointer;transition:var(--t);border-left:2px solid transparent;margin-bottom:2px;text-decoration:none}
+.manual-toc-item:hover{background:rgba(0,240,255,.06);color:var(--text)}
+.manual-toc-item.active{color:var(--cyan);background:rgba(0,240,255,.1);border-left-color:var(--cyan);font-weight:700}
+.manual-content{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px 28px;line-height:1.7;min-height:400px}
+.manual-content h1{font-family:var(--ft);font-size:1.5rem;color:var(--cyan);letter-spacing:1.5px;margin:0 0 6px;background:none;-webkit-text-fill-color:currentColor}
+.manual-content h2{font-family:var(--ft);font-size:1.1rem;color:var(--cyan);letter-spacing:1.5px;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.manual-content h2::before{content:"";width:4px;height:18px;background:linear-gradient(180deg,var(--cyan),var(--pink));border-radius:2px;box-shadow:var(--glow-c)}
+.manual-content h3{font-family:var(--ft);font-size:.9rem;color:var(--text);letter-spacing:1px;margin:22px 0 10px;text-transform:none}
+.manual-content p{margin-bottom:12px;color:var(--text);font-size:.9rem}
+.manual-content ul,.manual-content ol{margin:0 0 14px 22px;font-size:.9rem}
+.manual-content li{margin-bottom:6px;color:var(--text)}
+.manual-content code{background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.25);border-radius:6px;padding:2px 8px;font-family:var(--fm);font-size:.82rem;color:var(--cyan)}
+.manual-content .step-block{display:flex;gap:16px;background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:16px;margin:14px 0;transition:var(--t)}
+.manual-content .step-block:hover{border-color:var(--bs);transform:translateX(4px)}
+.manual-content .step-num-manual{flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#04121e;font-family:var(--ft);font-weight:900;font-size:1rem;box-shadow:var(--glow-c)}
+.manual-content .step-body{flex:1}
+.manual-content .step-body strong{display:block;font-family:var(--ft);font-size:.9rem;letter-spacing:.5px;color:var(--cyan);margin-bottom:6px}
+.manual-content .hint{background:linear-gradient(90deg,rgba(0,240,255,.06),transparent);border-left:3px solid var(--cyan);padding:12px 16px;border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);margin:14px 0}
+.manual-content .hint.warn{border-left-color:var(--warn);background:linear-gradient(90deg,rgba(245,158,11,.08),transparent)}
+.manual-content .hint.lime{border-left-color:var(--lime);background:linear-gradient(90deg,rgba(57,255,20,.06),transparent)}
+.manual-content .hint.pink{border-left-color:var(--pink);background:linear-gradient(90deg,rgba(255,30,142,.08),transparent)}
+.mock{background:var(--solid);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0;font-family:var(--fm);font-size:.75rem;position:relative;overflow:hidden}
+.mock::before{content:attr(data-label);position:absolute;top:0;left:0;background:linear-gradient(90deg,var(--cyan),var(--purple));color:#04121e;font-family:var(--ft);font-size:.6rem;font-weight:900;letter-spacing:1.2px;padding:3px 12px;border-bottom-right-radius:8px;z-index:2}
+.mock-bar{height:28px;background:linear-gradient(180deg,rgba(0,240,255,.1),rgba(0,240,255,.02));border-radius:8px;margin-bottom:10px;margin-top:8px;display:flex;align-items:center;padding:0 12px;color:var(--dim);font-size:.68rem;letter-spacing:1px;gap:8px}
+.mock-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.mock-side{display:grid;grid-template-columns:110px 1fr;gap:10px}
+.mock-nav{background:rgba(0,0,0,.3);border-radius:8px;padding:8px}
+.mock-nav-item{padding:6px 8px;border-radius:6px;color:var(--dim);font-size:.68rem;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.mock-nav-item.active{background:linear-gradient(90deg,rgba(0,240,255,.2),transparent);color:var(--cyan);border-left:2px solid var(--cyan)}
+.mock-body{background:rgba(0,0,0,.2);border-radius:8px;padding:12px;min-height:120px}
+.mock-card{background:rgba(0,240,255,.05);border:1px solid rgba(0,240,255,.2);border-radius:8px;padding:10px;margin-bottom:8px}
+.mock-card-title{font-family:var(--ft);color:var(--cyan);font-size:.72rem;letter-spacing:1px;margin-bottom:6px}
+.mock-input{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:var(--fm);font-size:.75rem;margin-bottom:6px}
+.mock-btn{display:inline-block;padding:6px 12px;border-radius:6px;background:linear-gradient(90deg,var(--cyan),var(--purple));color:#04121e;font-family:var(--ft);font-size:.65rem;font-weight:900;letter-spacing:1px;margin:4px 4px 4px 0;cursor:default}
+.mock-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.mock-btn.pink{background:linear-gradient(90deg,var(--pink),var(--purple));color:#fff}
+.mock-btn.lime{background:linear-gradient(90deg,var(--lime),var(--cyan));color:#031a08}
+.mock-balls{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.mock-ball{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#1d2a48,#070c18);border:1px solid var(--bs);display:grid;place-items:center;font-family:var(--ft);font-weight:700;font-size:.65rem;color:var(--text)}
+.mock-ball.green{background:linear-gradient(135deg,var(--lime),var(--cyan));color:#031a08;border-color:transparent}
+.mock-ball.pink{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-color:transparent}
+.mock-ball.cyan{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#04121e;border-color:transparent}
+.mock-arrow{display:inline-block;color:var(--pink);font-weight:900;margin:0 6px}
+.mock-annot{position:relative;display:inline-block;padding:4px 10px;background:rgba(255,30,142,.15);border:1px dashed var(--pink);border-radius:6px;color:var(--pink);font-family:var(--fm);font-size:.68rem;font-weight:700}
+.mock-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--fm);font-size:.62rem;font-weight:700}
+.mock-badge.win{background:rgba(57,255,20,.15);color:var(--lime);border:1px solid rgba(57,255,20,.4)}
+.mock-badge.pend{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.mock-badge.manual{background:rgba(0,240,255,.15);color:var(--cyan);border:1px solid rgba(0,240,255,.4)}
+.mock-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:600px){.mock-grid2{grid-template-columns:1fr}}
+.mock-flow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0;font-family:var(--fm);font-size:.72rem}
+.mock-flow-item{background:rgba(0,240,255,.08);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text)}
+.mock-flow-item.num{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#04121e;font-weight:900;padding:6px 10px;border-radius:50%;width:28px;height:28px;display:grid;place-items:center}
+.mock-title{font-family:var(--ft);color:var(--cyan);font-size:.72rem;letter-spacing:1px;margin:8px 0 4px}
+.manual-empty{text-align:center;color:var(--dim);padding:40px 20px;font-family:var(--fm);font-size:.85rem}
+@media print{.topbar,.sidebar,.btn-row,.icon-btn,.footer{display:none!important}.main{grid-template-columns:1fr}body{background:#fff;color:#000}.app{grid-template-rows:1fr}}
+</style>
+</head>
+<body data-theme="dark" data-font="inter">
+<div class="app">
+  <header class="topbar">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00f0ff"/><stop offset="50%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ff1e8e"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="28" stroke="url(#lg)" stroke-width="2.5"/>
+        <circle cx="32" cy="32" r="16" stroke="url(#lg)" stroke-width="1.8" opacity=".65"/>
+        <circle cx="32" cy="32" r="5" fill="url(#lg)"/>
+        <path d="M32 4 L32 14 M32 50 L32 60 M4 32 L14 32 M50 32 L60 32" stroke="url(#lg)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div><div class="logo-text">LOTTERY PRO</div><div class="logo-sub">Full Suite</div></div>
+    </div>
+    <div class="status-pill"><span class="status-dot"></span><span id="statusText">AGUARDANDO</span></div>
+    <div class="status-pill"><span id="clock">--:--:--</span></div>
+    <div class="topbar-spacer"></div>
+    <button class="icon-btn" id="soundToggle" title="Som">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    </button>
+    <button class="icon-btn" id="themeToggle" title="Tema">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+  </header>
+
+  <div class="main">
+    <aside class="sidebar">
+      <div class="sidebar-title">◈ Principal</div>
+      <div class="nav-item active" data-panel="dashboard">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-panel="importar">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+        <span>Importar Arquivo</span>
+      </div>
+      <div class="nav-item" data-panel="database">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Banco de Dados</span>
+        <span class="nav-badge" id="dbBadge" style="display:none">0</span>
+      </div>
+      <div class="nav-item" data-panel="analise">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+        <span>Análise</span>
+      </div>
+      <div class="nav-item" data-panel="consulta">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Consulta</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="sidebar-title">◈ Ferramentas</div>
+      <div class="nav-item" data-panel="fechamento">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+        <span>Fechamento</span>
+      </div>
+      <div class="nav-item" data-panel="bilhetes">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18M7 6v12M17 6v12"/></svg>
+        <span>Bilhetes</span>
+      </div>
+      <div class="nav-item" data-panel="historico-conf">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Conferências</span>
+        <span class="nav-badge" id="confBadge" style="display:none">0</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="sidebar-title">◈ Sistema</div>
+      <div class="nav-item" data-panel="config">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.2 4.2l4.2 4.2M15.6 15.6l4.2 4.2M1 12h6M17 12h6M4.2 19.8l4.2-4.2M15.6 8.4l4.2-4.2"/></svg>
+        <span>Configurações</span>
+      </div>
+      <div class="nav-item" data-panel="roadmap">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Roadmap</span>
+        <span class="nav-badge" id="rmBadge" style="display:none">0</span>
+      </div>
+      <div class="nav-item" data-panel="manual">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Manual</span>
+      </div>
+    </aside>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <section class="panel active" id="panel-dashboard">
+        <h1>◈ DASHBOARD</h1>
+        <p class="subtitle">Visão geral.</p>
+        <p class="subtitle" id="dLastDate" style="margin-top:-10px;font-family:var(--fm);font-size:.78rem">Último sorteio: —</p>
+        <div class="grid grid-4">
+          <div class="stat"><div class="label">Concursos</div><div class="value cyan" id="dTotal">0</div></div>
+          <div class="stat"><div class="label">Bilhetes Cadastrados</div><div class="value pink" id="dTickets">0</div></div>
+          <div class="stat"><div class="label">Conferências</div><div class="value purple" id="dConf">0</div></div>
+          <div class="stat"><div class="label">Saldo Acumulado</div><div class="value lime" id="dSaldo">R$ 0,00</div></div>
+        </div>
+        <h2>Primeiros Passos (clique em cada um)</h2>
+        <div class="card">
+          <div class="step" data-go="importar" style="cursor:pointer">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <div class="step-title">📂 Importar Arquivo</div>
+              <div class="step-text">Clique aqui → vai para a aba de importação. Arraste o <strong>Lotofácil.xlsx</strong>.</div>
+            </div>
+          </div>
+          <div class="step" data-go="bilhetes" style="cursor:pointer">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <div class="step-title">✍️ Cadastrar suas apostas</div>
+              <div class="step-text">Cadastre os bilhetes que você <strong>realmente jogou</strong> na Caixa (com dezenas exatas).</div>
+            </div>
+          </div>
+          <div class="step" data-go="bilhetes" style="cursor:pointer">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <div class="step-title">🎯 Conferir</div>
+              <div class="step-text">O sistema puxa o sorteio do banco automaticamente e calcula pontos.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IMPORTAR -->
+      <section class="panel" id="panel-importar">
+        <h1>◈ IMPORTAR ARQUIVO</h1>
+        <p class="subtitle">Parser multi-estratégia (XLSX, XLS, CSV, TXT) com detecção de data.</p>
+        <div class="card">
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt" style="display:none">
+          <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+            <div class="dz-title">ARRASTE O ARQUIVO AQUI</div>
+            <div class="dz-sub">ou clique para selecionar</div>
+            <div class="dz-formats"><span>XLSX</span><span>XLS</span><span>CSV</span><span>TXT</span></div>
+          </div>
+        </div>
+        <div id="filePreviewWrap"></div>
+        <div id="importProgressWrap" style="display:none">
+          <div class="card">
+            <h3>◈ Processando</h3>
+            <div class="progress" style="margin-top:10px"><span id="importProgress"></span></div>
+            <p class="subtitle" style="margin-top:10px;font-size:.8rem" id="importStatus">Lendo...</p>
+          </div>
+        </div>
+        <div id="diagnosticWrap"></div>
+      </section>
+
+      <!-- BANCO -->
+      <section class="panel" id="panel-database">
+        <h1>◈ BANCO DE DADOS</h1>
+        <p class="subtitle">Histórico persistido com datas.</p>
+        <div class="grid grid-4">
+          <div class="stat"><div class="label">Total</div><div class="value cyan" id="dbCount">0</div></div>
+          <div class="stat"><div class="label">Primeiro</div><div class="value pink" id="dbFirst">—</div></div>
+          <div class="stat"><div class="label">Último</div><div class="value purple" id="dbLast">—</div></div>
+          <div class="stat"><div class="label">Dezenas</div><div class="value lime">15</div></div>
+        </div>
+        <div class="card">
+          <div class="grid grid-3">
+            <label class="field"><span>Buscar</span><input type="text" id="dbSearch" placeholder="Ex: 3200"></label>
+            <label class="field"><span>Por página</span><select id="dbPageSize"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label>
+            <label class="field"><span>Ordem</span><select id="dbOrder"><option value="asc">Antigos</option><option value="desc" selected>Recentes</option></select></label>
+          </div>
+          <div class="db-table-wrap"><table><thead><tr><th>Conc.</th><th>Data</th><th>Dezenas</th><th>Soma</th><th>Pares</th></tr></thead><tbody id="dbTbody"></tbody></table></div>
+          <div class="pagination" id="dbPagination"></div>
+        </div>
+        <div class="card">
+          <div class="btn-row">
+            <button class="btn primary" id="btnExportDB">📥 Exportar JSON</button>
+            <button class="btn ghost" id="btnClearDB">🗑 Limpar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANÁLISE (ATUALIZADA) -->
+      <section class="panel" id="panel-analise">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+          <div>
+            <h1 style="margin:0">◈ ANÁLISE E TENDÊNCIAS</h1>
+            <p class="subtitle" style="margin:6px 0 0">Padrão visual Dezeneiro com métricas estatísticas e mapa de calor.</p>
+          </div>
+          <div class="analise-period-bar" id="analisePeriodBar">
+            <button class="period-btn active" data-period="all">Histórico Completo</button>
+            <button class="period-btn" data-period="100">Últimos 100</button>
+            <button class="period-btn" data-period="30">Últimos 30</button>
+            <button class="period-btn" data-period="2026">Ano 2026</button>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:16px">
+          <div class="stat"><div class="label">Concursos Analisados</div><div class="value cyan" id="anTotal">0</div></div>
+          <div class="stat"><div class="label">Mais Sorteada</div><div class="value pink" id="anHot">—</div></div>
+          <div class="stat"><div class="label">Mais Fria</div><div class="value purple" id="anCold">—</div></div>
+          <div class="stat"><div class="label">Soma Média</div><div class="value lime" id="anSum">—</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:16px">
+          <div class="card">
+            <h3>🔥 TOP 10 MAIS SORTEADAS</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas com maior frequência no período selecionado.</p>
+            <div id="anTopTableWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>❄️ MAIS ATRASADAS AGORA (SECA)</h3>
+            <p class="subtitle" style="font-size:.78rem;margin-bottom:10px">Dezenas há mais sorteios consecutivos sem sair.</p>
+            <div id="anDryListWrap"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            <h3 style="margin:0">🌡️ MAPA DE CALOR 5×5 (NÚMEROS GRANDES)</h3>
+            <span class="badge info" id="anHeatRangeInfo">25 dezenas</span>
+          </div>
+          <div class="heatmap-big-grid" id="heatmap">
+            <p class="subtitle">Sem dados.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card">
+            <h3>📊 Frequência Individual de Todas as 25</h3>
+            <div id="freqChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+          <div class="card">
+            <h3>⏱️ Atraso Atual de Todas as 25</h3>
+            <div id="delayChart" style="max-height:360px;overflow-y:auto;padding-right:6px"><p class="subtitle">Sem dados.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONSULTA -->
+      <section class="panel" id="panel-consulta">
+        <h1>◈ CONSULTA DE RESULTADOS</h1>
+        <p class="subtitle">Verifique se um resultado já apareceu antes.</p>
+        <div class="tabs">
+          <div class="tab active" data-tab="c-dezenas">🔢 Por Dezenas</div>
+          <div class="tab" data-tab="c-concurso">🏆 Por Concurso</div>
+          <div class="tab" data-tab="c-varredura">🔍 Varredura Global</div>
+        </div>
+        <div class="tab-content active" id="tab-c-dezenas">
+          <div class="card">
+            <h3>◈ Digite as 15 dezenas para consultar</h3>
+            <div class="hint"><strong>Como usar:</strong> clique nas dezenas abaixo e depois em <strong>Consultar</strong>.</div>
+            <div class="ball-grid" id="queryGrid"></div>
+            <div class="btn-row" style="margin-top:16px">
+              <button class="btn ghost" id="qRandom">🎲 Aleatório</button>
+              <button class="btn ghost" id="qClear">Limpar</button>
+              <button class="btn primary" id="qSearch">🔍 Consultar</button>
+            </div>
+            <p class="subtitle" style="margin-top:10px">Selecionadas: <strong id="qCount">0</strong>/15</p>
+          </div>
+          <div id="qResultWrap"></div>
+        </div>
+        <div class="tab-content" id="tab-c-concurso">
+          <div class="card">
+            <h3>◈ Escolha um concurso do banco</h3>
+            <div class="grid grid-2">
+              <label class="field"><span>Número do concurso</span><input type="number" id="queryConcNum" placeholder="Ex: 3200" min="1"></label>
+              <label class="field"><span>&nbsp;</span><button class="btn primary" id="qConcSearch" style="width:100%">🔍 Consultar</button></label>
+            </div>
+            <div class="hint">Banco atual: <strong id="qRangeInfo">0 concursos</strong></div>
+          </div>
+          <div id="qConcResultWrap"></div>
+        </div>
+        <div class="tab-content" id="tab-c-varredura">
+          <div class="card">
+            <h3>◈ Varredura Completa do Banco</h3>
+            <div class="hint lime"><strong>Como funciona:</strong> compara todos os pares de concursos e retorna repetições exatas (15 pts) ou parciais (14 pts).</div>
+            <div class="btn-row">
+              <button class="btn primary" id="btnScan15">🔍 Repetições Exatas (15 pts)</button>
+              <button class="btn pink" id="btnScan14">🔍 Repetições de 14 pts</button>
+            </div>
+            <div class="progress" style="margin-top:14px;display:none" id="scanProgressWrap"><span id="scanProgress"></span></div>
+          </div>
+          <div id="scanResultWrap"></div>
+        </div>
+      </section>
+
+      <!-- FECHAMENTO -->
+      <section class="panel" id="panel-fechamento">
+        <h1>◈ FECHAMENTO MATEMÁTICO</h1>
+        <p class="subtitle">Escolha N dezenas (15 a 20) e o sistema atualiza a matemática automaticamente.</p>
+        <div class="card">
+          <h3>◈ Configuração</h3>
+          <div class="grid grid-2">
+            <label class="field">
+              <span>Quantidade de dezenas</span>
+              <select id="fechQty">
+                <option value="15">15 dezenas — garantia 15 pontos</option>
+                <option value="16">16 dezenas — 1 cartão já garante 14 pts</option>
+                <option value="17">17 dezenas — garantia 14 pts (8 cartões)</option>
+                <option value="18" selected>18 dezenas — garantia 14 pts (24 cartões)</option>
+                <option value="19">19 dezenas — garantia 14 pts (calculado)</option>
+                <option value="20">20 dezenas — garantia 14 pts (mais lento)</option>
+              </select>
+            </label>
+            <div id="fechInfo"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Selecione as <span id="fechQtyLabel">18</span> dezenas</h3>
+          <div class="ball-grid" id="pickerGrid"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn ghost" id="btnRandom18">🎲 Aleatório</button>
+            <button class="btn ghost" id="btnClear18">Limpar</button>
+            <button class="btn pink" id="btnAuto18">Auto: mais quentes</button>
+            <button class="btn primary" id="btnGerarFech">⚡ Gerar Fechamento</button>
+          </div>
+          <p class="subtitle" style="margin-top:10px">Selecionadas: <strong id="selCount">0</strong>/<span id="selTotal">18</span></p>
+        </div>
+        <div class="card" id="fechResult" style="display:none">
+          <h3>Resultado do Fechamento</h3>
+          <div class="grid grid-4" style="margin-bottom:14px">
+            <div class="stat"><div class="label">Cartões</div><div class="value cyan" id="fCards">0</div></div>
+            <div class="stat"><div class="label">Garantia</div><div class="value pink" id="fGuar">—</div></div>
+            <div class="stat"><div class="label">Custo Total</div><div class="value lime" id="fCusto">—</div></div>
+            <div class="stat"><div class="label">Economia vs Direto</div><div class="value orange" id="fEconomia">—</div></div>
+          </div>
+          <div class="progress" style="margin-bottom:14px"><span id="fProg"></span></div>
+          <div id="fechCards"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn" id="btnFechTxt">📥 Exportar .txt</button>
+            <button class="btn lime" id="btnFechParaLote">➕ Enviar para Bilhetes (cadastrar)</button>
+            <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BILHETES -->
+      <section class="panel" id="panel-bilhetes">
+        <h1>◈ BILHETES</h1>
+        <p class="subtitle">Cadastro manual, geração automática, edição e conferência.</p>
+
+        <div class="tabs">
+          <div class="tab active" data-tab="b-manual">✍️ Cadastrar Manual</div>
+          <div class="tab" data-tab="b-auto">⚡ Gerar Automático</div>
+        </div>
+
+        <div class="tab-content active" id="tab-b-manual">
+          <div class="card">
+            <h3>◈ Aposta que você fez na Caixa</h3>
+            <div class="grid grid-3">
+              <label class="field"><span>Concurso</span><input type="number" id="manConc" value="3788" min="1"></label>
+              <label class="field"><span>Data (opcional)</span><input type="date" id="manDate"></label>
+              <label class="field"><span>Custo (R$)</span><input type="number" id="manCost" value="3.50" step="0.01" min="0"></label>
+            </div>
+            <label class="field">
+              <span>Cole as 15 dezenas (separe por espaço, vírgula ou ponto)</span>
+              <input type="text" id="manPaste" placeholder="01 02 04 07 08 10 11 12 14 16 18 20 22 23 24">
+            </label>
+            <button class="btn ghost small" id="manParse">↧ Preencher a grade a partir do texto</button>
+            <h3 style="margin-top:18px">Ou clique nas dezenas:</h3>
+            <div class="ball-grid" id="manGrid"></div>
+            <p class="subtitle" style="margin-top:10px">Selecionadas: <strong id="manCount">0</strong>/15</p>
+            <div class="btn-row" style="margin-top:14px">
+              <button class="btn ghost" id="manClear">Limpar</button>
+              <button class="btn primary" id="manSave">➕ Cadastrar Aposta</button>
+            </div>
+            <p class="subtitle" id="manInfoConcurso" style="margin-top:10px;font-size:.78rem"></p>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-b-auto">
+          <div class="card">
+            <div class="grid grid-4">
+              <label class="field"><span>Conc. Inicial</span><input type="number" id="bConcIni" value="3201" min="1"></label>
+              <label class="field"><span>Qtd. Concursos</span><input type="number" id="bConc" value="5" min="1" max="100"></label>
+              <label class="field"><span>Bilhetes/Concurso</span><input type="number" id="bPer" value="3" min="1" max="20"></label>
+              <label class="field"><span>Dezenas/Bilhete</span><select id="bSize"><option>15</option><option>16</option><option>17</option><option>18</option></select></label>
+            </div>
+            <div class="grid grid-2" style="margin-top:10px">
+              <label class="field"><span>Método</span><select id="bMethod"><option value="random">Aleatório</option><option value="weighted" selected>Score Ponderado</option><option value="hot">Quentes</option><option value="cold">Frias</option><option value="balanced">Balanceado</option></select></label>
+              <label class="field"><span>Custo por cartão (R$)</span><input type="number" id="bCost" value="3.50" step="0.01" min="0"></label>
+            </div>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="btn primary" id="btnGerarLote">⚡ Gerar Lote</button>
+              <button class="btn ghost" id="btnLimparLote">🗑 Limpar Tudo</button>
+              <button class="btn" id="btnExportTxt">📥 Exportar .txt</button>
+            </div>
+            <div class="grid grid-3" style="margin-top:14px">
+              <div class="stat"><div class="label">Total</div><div class="value cyan" id="bTotal">0</div></div>
+              <div class="stat"><div class="label">Custo Total</div><div class="value lime" id="bCusto">R$ 0,00</div></div>
+              <div class="stat"><div class="label">Método</div><div class="value pink" id="bMetodo">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="loteArea"></div>
+      </section>
+
+      <!-- CONFERÊNCIAS -->
+      <section class="panel" id="panel-historico-conf">
+        <h1>◈ CONFERÊNCIAS</h1>
+        <p class="subtitle">Registro de resultados.</p>
+        <div class="grid grid-4">
+          <div class="stat"><div class="label">Concursos Conferidos</div><div class="value cyan" id="confTotal">0</div></div>
+          <div class="stat"><div class="label">Total Investido</div><div class="value pink" id="confInvestido">R$ 0,00</div></div>
+          <div class="stat"><div class="label">Total Recebido</div><div class="value lime" id="confRecebido">R$ 0,00</div></div>
+          <div class="stat"><div class="label">Saldo</div><div class="value" id="confSaldo">R$ 0,00</div></div>
+        </div>
+        <div class="card">
+          <h3>◈ Histórico</h3>
+          <div id="confHistoryWrap"><p class="subtitle">Nenhuma conferência registrada.</p></div>
+          <div class="btn-row" style="margin-top:14px">
+            <button class="btn ghost" id="btnExportConf">📥 Exportar JSON</button>
+            <button class="btn ghost" id="btnClearConf">🗑 Limpar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section class="panel" id="panel-config">
+        <h1>◈ CONFIGURAÇÕES</h1>
+        <p class="subtitle">Aparência.</p>
+        <div class="card"><h3>Tema</h3>
+          <div class="btn-row">
+            <button class="btn ghost theme-opt" data-theme="dark">🌙 Escuro</button>
+            <button class="btn ghost theme-opt" data-theme="light">☀ Claro</button>
+          </div>
+        </div>
+        <div class="card"><h3>Fonte</h3>
+          <div class="btn-row">
+            <button class="btn ghost font-opt" data-font="inter">Inter</button>
+            <button class="btn ghost font-opt" data-font="orbitron">Orbitron</button>
+            <button class="btn ghost font-opt" data-font="rajdhani">Rajdhani</button>
+            <button class="btn ghost font-opt" data-font="exo">Exo 2</button>
+            <button class="btn ghost font-opt" data-font="jetbrains">JetBrains Mono</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROADMAP -->
+      <section class="panel" id="panel-roadmap">
+        <h1>◈ ROADMAP DO PROJETO</h1>
+        <p class="subtitle">Acompanhamento de fases, itens concluídos e backlog. O estado dos checkboxes é salvo automaticamente.</p>
+
+        <div class="grid grid-4" id="rmStats" style="margin-bottom:20px">
+          <div class="stat"><div class="label">Total de Itens</div><div class="value cyan" id="rmTotal">0</div></div>
+          <div class="stat"><div class="label">✅ Feitos</div><div class="value lime" id="rmDone">0</div></div>
+          <div class="stat"><div class="label">🟡 Testando</div><div class="value orange" id="rmTesting">0</div></div>
+          <div class="stat"><div class="label">⬜ Pendentes</div><div class="value pink" id="rmTodo">0</div></div>
+        </div>
+
+        <div class="progress" style="height:10px;margin-bottom:20px"><span id="rmProgress" style="width:0%"></span></div>
+
+        <div id="rmPhases"></div>
+
+        <div class="card">
+          <div class="btn-row">
+            <button class="btn ghost" id="rmResetChecklist">🔄 Resetar Checklist</button>
+            <button class="btn ghost" id="rmMarcarFeitos">✅ Marcar tudo como feito</button>
+            <button class="btn ghost" id="rmLimparTudo">⬜ Desmarcar tudo</button>
+          </div>
+          <p class="subtitle" style="margin-top:12px;font-size:.78rem">
+            💡 <strong>Dica:</strong> clique em qualquer item para alternar entre pendente ⇄ feito. Use os badges de prioridade como referência.
+          </p>
+        </div>
+      </section>
+
+      <!-- MANUAL -->
+      <section class="panel" id="panel-manual">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+          <div>
+            <h1 style="margin:0">◈ MANUAL DO USUÁRIO</h1>
+            <p class="subtitle" style="margin:8px 0 0">Guia completo, passo a passo, com ilustrações.</p>
+          </div>
+          <div class="btn-row">
+            <button class="btn ghost" id="manualTOC">📑 Índice</button>
+            <button class="btn primary" id="manualPrint">🖨 Salvar como PDF</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:12px 16px">
+          <input type="text" id="manualSearch" placeholder="🔍 Buscar no manual... (ex: cadastrar, fechamento, prêmio)">
+        </div>
+
+        <div class="manual-layout">
+          <aside class="manual-toc" id="manualTocList"></aside>
+          <article class="manual-content" id="manualContent"></article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div><span class="dot"></span>ENGINE ONLINE</div>
+    <div id="footerStatus">Aguardando...</div>
+    <div>LOTTERY PRO</div>
+  </footer>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+/* ============================================================ STATE */
+const S = {
+  db: [],
+  soundOn: true,
+  page: 1, pageSize: 50, order: 'desc', search: '',
+  fechQty: 18, dezenasN: [], fechCards: [],
+  lote: [], conferencias: {},
+  queryDezenas: [], duplicatas: null,
+  roadmapDone: {}
+};
+let COST = 3.5;
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const pad = n => String(n).padStart(2, '0');
+const fmt = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const canon = draw => [...draw].sort((a,b)=>a-b).join(',');
+
+/* ============================================================ DATAS */
+function excelSerialToDate(serial){
+  return new Date(Math.round((serial - 25569) * 86400 * 1000));
+}
+function parseDateVal(v){
+  if(v==null || v==='') return null;
+  if(v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  if(typeof v==='number'){
+    if(v>30000 && v<60000) return excelSerialToDate(v);
+    return null;
+  }
+  const s=String(v).trim();
+  let m=s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+  if(m){
+    let d=+m[1], mo=+m[2], y=+m[3];
+    if(y<100) y+=2000;
+    if(mo>12 && d<=12){ [d,mo]=[mo,d]; }
+    if(d<1||d>31||mo<1||mo>12) return null;
+    return new Date(y, mo-1, d);
+  }
+  m=s.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})/);
+  if(m) return new Date(+m[1], +m[2]-1, +m[3]);
+  return null;
+}
+function fmtDate(dt){
+  if(!dt) return '—';
+  const d=(dt instanceof Date)?dt:new Date(dt);
+  if(isNaN(d.getTime())) return '—';
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+}
+function detectDateColumn(m, startRow){
+  const N=Math.min(m.length, 800);
+  const mc=m[0]?m[0].length:0;
+  let best=-1, bestCount=0;
+  for(let c=0;c<mc;c++){
+    let k=0,t=0;
+    for(let r=startRow;r<N;r++){
+      const row=m[r]; if(!row) continue;
+      const v=row[c];
+      if(v==null||v==='') continue;
+      t++;
+      if(parseDateVal(v)) k++;
+    }
+    if(t>=10 && k/t>0.7 && k>bestCount){ best=c; bestCount=k; }
+  }
+  return best;
+}
+function dataDoConcurso(n){
+  const c = S.db.find(x => x.n === n);
+  return c && c.date ? c.date : null;
+}
+function dataInputValue(dt){
+  if(!dt) return '';
+  const d=(dt instanceof Date)?dt:new Date(dt);
+  if(isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function dataFromInput(v){
+  if(!v) return null;
+  const d=new Date(v+'T12:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+
+/* ============================================================ ROADMAP DATA */
+const ROADMAP = [
+  { id:'f1', titulo:'FASE 1 — CONCLUÍDA (base do sistema)', itens:[
+    {id:'f1-1', txt:'Estrutura visual (topbar, sidebar, painéis, footer)', prio:'done'},
+    {id:'f1-2', txt:'Navegação lateral + tabs + passos do Dashboard', prio:'done'},
+    {id:'f1-3', txt:'Tema escuro/claro + 5 fontes', prio:'done'},
+    {id:'f1-4', txt:'Sons (clique, OK, erro, big, win)', prio:'done'},
+    {id:'f1-5', txt:'Importação XLSX/XLS/CSV/TXT', prio:'done'},
+    {id:'f1-6', txt:'Parser multi-estratégia (E1→E4)', prio:'done'},
+    {id:'f1-7', txt:'Diagnóstico visual quando o parser falha', prio:'done'},
+    {id:'f1-8', txt:'Banco de dados com paginação/busca/ordem', prio:'done'},
+    {id:'f1-9', txt:'Persistência (banco, lote, conferências, tema)', prio:'done'},
+    {id:'f1-10', txt:'Análise: frequência, atraso, quente/fria', prio:'done'},
+    {id:'f1-11', txt:'Consulta por dezenas / concurso', prio:'done'},
+    {id:'f1-12', txt:'Varredura global (15 pts e 14 pts)', prio:'done'},
+    {id:'f1-13', txt:'Fechamento 15→20 dezenas com validação', prio:'done'},
+    {id:'f1-14', txt:'Geração de bilhetes (5 métodos)', prio:'done'},
+    {id:'f1-15', txt:'Conferência com tabela de prêmios editável', prio:'done'},
+    {id:'f1-16', txt:'Histórico de conferências', prio:'done'}
+  ]},
+  { id:'f2', titulo:'FASE 2 — CONCLUÍDA (datas + cadastro manual)', itens:[
+    {id:'f2-1', txt:'Detecção automática da coluna de data no parser', prio:'done'},
+    {id:'f2-2', txt:'Conversão de serial Excel → Date', prio:'done'},
+    {id:'f2-3', txt:'Aceitar datas em vários formatos (BR, ISO, serial)', prio:'done'},
+    {id:'f2-4', txt:'Coluna "Data" no Banco de Dados', prio:'done'},
+    {id:'f2-5', txt:'Datas em primeiros/últimos concursos', prio:'done'},
+    {id:'f2-6', txt:'Última data no Dashboard', prio:'done'},
+    {id:'f2-7', txt:'Datas em consultas e varredura', prio:'done'},
+    {id:'f2-8', txt:'Datas nos exports (JSON)', prio:'done'},
+    {id:'f2-9', txt:'Mapa de Calor 5×5 na aba Análise', prio:'done'},
+    {id:'f2-10', txt:'Cadastro manual de bilhete (Bilhetes)', prio:'done'},
+    {id:'f2-11', txt:'Enviar fechamento → Bilhetes', prio:'done'},
+    {id:'f2-12', txt:'Confirmação antes de sobrescrever lote', prio:'done'},
+    {id:'f2-13', txt:'Editar bilhete (✏️)', prio:'done'},
+    {id:'f2-14', txt:'Remover bilhete individual (🗑)', prio:'done'},
+    {id:'f2-15', txt:'Remover concurso inteiro', prio:'done'},
+    {id:'f2-16', txt:'Data por concurso no card do lote', prio:'done'},
+    {id:'f2-17', txt:'Conferência puxa sorteio do banco sozinho', prio:'done'},
+    {id:'f2-18', txt:'Correção balanced com size>15', prio:'done'},
+    {id:'f2-19', txt:'costUnit por lote (não bagunça histórico)', prio:'done'},
+    {id:'f2-20', txt:'Fix visual das bolinhas de conferência', prio:'done'},
+    {id:'f2-21', txt:'Ajuste N=17 para 8 cartões (mínimo real)', prio:'done'}
+  ]},
+  { id:'f3', titulo:'FASE 3 — EM TESTE', itens:[
+    {id:'f3-1', txt:'Bilhete do 3788 conferindo 11 pts', prio:'done'},
+    {id:'f3-2', txt:'Editar bilhete', prio:'testing'},
+    {id:'f3-3', txt:'Remover bilhete / concurso', prio:'testing'},
+    {id:'f3-4', txt:'Enviar fechamento → Bilhetes', prio:'testing'},
+    {id:'f3-5', txt:'Persistência ao fechar/abrir', prio:'testing'},
+    {id:'f3-6', txt:'Data automática puxada do banco', prio:'testing'},
+    {id:'f3-7', txt:'Consulta / Varredura com datas', prio:'testing'},
+    {id:'f3-8', txt:'Mapa de Calor com números grandes', prio:'testing'},
+    {id:'f3-9', txt:'Exportar .txt do lote', prio:'testing'}
+  ]},
+  { id:'f4', titulo:'FASE 4 — BACKLOG APROVADO', itens:[
+    {id:'f4-1', txt:'Painel financeiro consolidado (tabela geral)', prio:'high'},
+    {id:'f4-2', txt:'Gráfico de evolução do saldo', prio:'high'},
+    {id:'f4-3', txt:'Filtro por período na Análise', prio:'done'},
+    {id:'f4-4', txt:'Relatório completo imprimível (PDF)', prio:'med'},
+    {id:'f4-5', txt:'Tela de Probabilidades (tabela 11→15)', prio:'high'},
+    {id:'f4-6', txt:'Calculadora N cartas → chance de X pts', prio:'high'},
+    {id:'f4-7', txt:'Expectativa por conferência', prio:'med'},
+    {id:'f4-8', txt:'Comparador Fechamento × Direto', prio:'med'},
+    {id:'f4-9', txt:'Suporte a Bolão', prio:'med'},
+    {id:'f4-10', txt:'Valor Esperado (EV)', prio:'low'},
+    {id:'f4-11', txt:'Importar bilhetes de arquivo (CSV/TXT)', prio:'high'},
+    {id:'f4-12', txt:'Alerta: concursos do banco não conferidos', prio:'med'},
+    {id:'f4-13', txt:'Duplicar bilhete', prio:'low'},
+    {id:'f4-14', txt:'Marcar bilhete como favorito', prio:'low'},
+    {id:'f4-15', txt:'Observações por bilhete', prio:'low'},
+    {id:'f4-16', txt:'Backup completo (export/import JSON)', prio:'med'},
+    {id:'f4-17', txt:'Modo "espião" — esconde R$', prio:'low'},
+    {id:'f4-18', txt:'Responsivo mobile (bottom tabs)', prio:'med'},
+    {id:'f4-19', txt:'Atalhos de teclado (1-25, Ctrl+S)', prio:'low'},
+    {id:'f4-20', txt:'Animação de sorteio ao puxar resultado', prio:'low'},
+    {id:'f4-21', txt:'Dark/light com transição suave', prio:'low'}
+  ]},
+  { id:'f5', titulo:'FASE 5 — AVANÇADO (futuro)', itens:[
+    {id:'f5-1', txt:'Web Worker para fechamento N=19/20', prio:'adv'},
+    {id:'f5-2', txt:'Algoritmos genéticos para fechamento', prio:'adv'},
+    {id:'f5-3', txt:'Importar resultados via API da Caixa', prio:'adv'},
+    {id:'f5-4', txt:'Múltiplos usuários / nuvem', prio:'adv'},
+    {id:'f5-5', txt:'Estatísticas avançadas (Markov, chi²)', prio:'adv'},
+    {id:'f5-6', txt:'Exportação Excel formatada', prio:'adv'},
+    {id:'f5-7', txt:'Modo simulação ("e se eu tivesse jogado X?")', prio:'adv'}
+  ]}
+];
+
+/* ============================================================ TOAST */
+function toast(msg, type=''){
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  el.textContent=msg;
+  $('#toastWrap').appendChild(el);
+  setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.transform='translateX(40px)';
+    el.style.transition='.35s';
+    setTimeout(()=>el.remove(),400);
+  },3400);
+}
+
+/* ============================================================ AUDIO */
+const AC = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function beep(f=880,d=.14,t='sine',v=.08){
+  if(!S.soundOn)return;
+  try{
+    if(!actx)actx=new AC();
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.type=t;o.frequency.value=f;
+    g.gain.setValueAtTime(v,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);
+    o.connect(g);g.connect(actx.destination);
+    o.start();o.stop(actx.currentTime+d);
+  }catch(e){}
+}
+const sOK  = () => { beep(660,.1); setTimeout(()=>beep(880,.1),120); setTimeout(()=>beep(1180,.18),240); };
+const sErr = () => beep(220,.25,'sawtooth',.06);
+const sClick = () => beep(1200,.04,'sine',.03);
+const sBig = () => { beep(440,.12); setTimeout(()=>beep(660,.12),130); setTimeout(()=>beep(880,.12),260); setTimeout(()=>beep(1320,.25),400); };
+const sWin = () => { beep(880,.15); setTimeout(()=>beep(1100,.15),150); setTimeout(()=>beep(1320,.15),300); setTimeout(()=>beep(1760,.3),450); };
+
+setInterval(()=>{
+  const d=new Date();
+  const cl=$('#clock');
+  if(cl) cl.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+},1000);
+
+/* ============================================================ NAV */
+$$('.nav-item').forEach(item=>item.addEventListener('click',function(){
+  $$('.nav-item').forEach(n=>n.classList.remove('active'));
+  $$('.panel').forEach(p=>p.classList.remove('active'));
+  this.classList.add('active');
+  const t=document.getElementById('panel-'+this.dataset.panel);
+  if(t)t.classList.add('active');
+  sClick();
+}));
+
+$$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  const p=tab.parentElement;
+  p.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  const panel=tab.closest('.panel');
+  panel.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  const c=panel.querySelector('#tab-'+tab.dataset.tab);
+  if(c)c.classList.add('active');
+  sClick();
+}));
+
+document.querySelectorAll('[data-go]').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const target=document.querySelector(`[data-panel="${el.dataset.go}"]`);
+    if(target){target.click();}
+  });
+});
+
+/* ============================================================ TEMA */
+const setTheme = t => { document.body.dataset.theme=t; localStorage.setItem('lp_theme',t); };
+const setFont  = f => { document.body.dataset.font=f;  localStorage.setItem('lp_font',f); };
+$('#themeToggle').addEventListener('click',()=>setTheme(document.body.dataset.theme==='dark'?'light':'dark'));
+$$('.theme-opt').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
+$$('.font-opt').forEach(b=>b.addEventListener('click',()=>setFont(b.dataset.font)));
+setTheme(localStorage.getItem('lp_theme')||'dark');
+setFont(localStorage.getItem('lp_font')||'inter');
+$('#soundToggle').classList.add('active');
+$('#soundToggle').addEventListener('click',()=>{
+  S.soundOn=!S.soundOn;
+  $('#soundToggle').classList.toggle('active',S.soundOn);
+  if(S.soundOn)sClick();
+  toast(S.soundOn?'🔊 Som ativado':'🔇 Som desativado',S.soundOn?'success':'warn');
+});
+
+/* ============================================================ PARSER XLSX */
+const HEADER_PATTERNS=[
+  /^b[o]?l[a]?\s*_?\s*0*(\d{1,2})$/i,
+  /^dezena\s*_?\s*0*(\d{1,2})$/i,
+  /^dez\s*_?\s*0*(\d{1,2})$/i,
+  /^num(ero)?\s*_?\s*0*(\d{1,2})$/i,
+  /^b\s*_?\s*0*(\d{1,2})$/i,
+  /^d\s*_?\s*0*(\d{1,2})$/i,
+  /^col\s*_?\s*0*(\d{1,2})$/i,
+  /^n\s*_?\s*0*(\d{1,2})$/i
+];
+function matchHeaderCell(v){
+  if(v==null||v==='')return null;
+  const str=String(v).trim();
+  if(!str||/^\d+(\.\d+)?$/.test(str))return null;
+  for(const p of HEADER_PATTERNS){
+    const m=str.match(p);
+    if(m){
+      const n=parseInt(m[m.length-1],10);
+      if(n>=1&&n<=25)return n;
+    }
+  }
+  return null;
+}
+function cellToNum(v){
+  if(v==null)return NaN;
+  if(typeof v==='number'){
+    if(Number.isInteger(v)&&v>=1&&v<=25)return v;
+    return NaN;
+  }
+  const s=String(v).trim();
+  if(!s)return NaN;
+  const n=parseInt(s,10);
+  if(!isNaN(n)&&n>=1&&n<=25)return n;
+  return NaN;
+}
+function sheetToMatrix(sheet){
+  if(!sheet)return{matrix:[],info:'vazio'};
+  let minR=Infinity,maxR=-Infinity,minC=Infinity,maxC=-Infinity,cnt=0;
+  for(const key in sheet){
+    if(key[0]==='!')continue;
+    const a=XLSX.utils.decode_cell(key);
+    if(a.r<minR)minR=a.r; if(a.r>maxR)maxR=a.r;
+    if(a.c<minC)minC=a.c; if(a.c>maxC)maxC=a.c;
+    cnt++;
+  }
+  let info=`!ref=${sheet['!ref']||'?'} cells=${cnt}`;
+  if(cnt===0)return{matrix:[],info};
+  if(maxR-minR>15000)maxR=minR+15000;
+  if(maxC-minC>80)maxC=minC+80;
+  const m=[];
+  for(let r=minR;r<=maxR;r++){
+    const row=[];
+    for(let c=minC;c<=maxC;c++){
+      const cell=sheet[XLSX.utils.encode_cell({r,c})];
+      row.push(cell?cell.v:null);
+    }
+    m.push(row);
+  }
+  if(m.length<3){
+    try{
+      const alt=XLSX.utils.sheet_to_json(sheet,{header:1,raw:true,defval:null,blankrows:true});
+      if(alt.length>m.length){info+=' fallback='+alt.length;return{matrix:alt,info};}
+    }catch(e){}
+  }
+  return{matrix:m,info};
+}
+function detectHeader(m){
+  let best={rowIdx:-1,colMap:{},count:0};
+  const lim=Math.min(m.length,40);
+  for(let r=0;r<lim;r++){
+    const row=m[r];if(!row)continue;
+    const cm={};let c=0;
+    for(let i=0;i<row.length;i++){
+      const n=matchHeaderCell(row[i]);
+      if(n!=null&&cm[n]==null){cm[n]=i;c++;}
+    }
+    if(c>best.count)best={rowIdx:r,colMap:cm,count:c};
+  }
+  return best;
+}
+function extractByColumns(m,cols,start,dateCol){
+  const draws=[], dates=[];
+  for(let r=start;r<m.length;r++){
+    const row=m[r];if(!row)continue;
+    const nums=[];let ok=true;
+    for(const c of cols){
+      if(c>=row.length){ok=false;break;}
+      const n=cellToNum(row[c]);
+      if(isNaN(n)){ok=false;break;}
+      nums.push(n);
+    }
+    if(!ok)continue;
+    const uq=[...new Set(nums)];
+    if(uq.length===15){
+      draws.push(uq.sort((a,b)=>a-b));
+      dates.push(dateCol!=null && dateCol>=0 ? parseDateVal(row[dateCol]) : null);
+    }
+  }
+  return {draws, dates};
+}
+function detectColumns(m){
+  const N=Math.min(m.length,300);
+  const cv={};const mc=m[0]?m[0].length:0;
+  for(let c=0;c<mc;c++){
+    let k=0;
+    for(let r=0;r<N;r++){
+      const row=m[r];if(!row)continue;
+      if(!isNaN(cellToNum(row[c])))k++;
+    }
+    if(k>N*.4)cv[c]=k;
+  }
+  const inc=c=>{
+    let last=-1,ok=0,t=0;
+    for(let r=0;r<N;r++){
+      const row=m[r];if(!row)continue;
+      const n=cellToNum(row[c]);
+      if(!isNaN(n)){t++;if(n>last)ok++;last=n;}
+    }
+    return t>0&&ok/t>.85;
+  };
+  const s=Object.keys(cv).map(c=>({c:+c,s:cv[c]})).filter(x=>!inc(x.c)).sort((a,b)=>b.s-a.s);
+  return s.slice(0,15).map(x=>x.c).sort((a,b)=>a-b);
+}
+function extractDraws(m){
+  const log=[];log.push(`matrix=${m.length}×${m[0]?m[0].length:0}`);
+  if(m.length<2)return{draws:[],dates:[],log,strategy:'insuficiente'};
+  const h=detectHeader(m);log.push(`E1 header: ${h.count} cols@L${h.rowIdx}`);
+  const startRow = h.count>=10 ? h.rowIdx+1 : 0;
+  const dateCol = detectDateColumn(m, startRow);
+  log.push(`dateCol=${dateCol}`);
+  if(h.count>=10){
+    let cols=[];
+    for(let n=1;n<=15;n++)if(h.colMap[n]!=null)cols.push(h.colMap[n]);
+    if(cols.length<15){
+      const fc=Math.min(...cols);cols=[];
+      for(let i=0;i<15;i++)cols.push(fc+i);
+    }
+    const r=extractByColumns(m,cols,startRow,dateCol);
+    if(r.draws.length>0)return{draws:r.draws,dates:r.dates,log,strategy:'cabeçalho'};
+  }
+  log.push('E2 colunas 2-16...');
+  const fc2=[];for(let i=2;i<=16;i++)fc2.push(i);
+  let sr=0;
+  for(let r=0;r<m.length;r++){
+    const row=m[r];if(!row)continue;
+    let v=0;
+    for(const c of fc2)if(c<row.length&&!isNaN(cellToNum(row[c])))v++;
+    if(v===15){sr=r;break;}
+  }
+  const r2=extractByColumns(m,fc2,sr,dateCol);
+  if(r2.draws.length>0)return{draws:r2.draws,dates:r2.dates,log,strategy:'colunas 2-16'};
+  log.push('E3 detecção...');
+  const ac=detectColumns(m);
+  if(ac.length>=15){
+    const r3=extractByColumns(m,ac.slice(0,15),0,dateCol);
+    if(r3.draws.length>0)return{draws:r3.draws,dates:r3.dates,log,strategy:'auto'};
+  }
+  log.push('E4 varredura...');
+  const mc=m[0]?m[0].length:0;
+  for(let s=0;s<=mc-15;s++){
+    const cols=[];for(let i=0;i<15;i++)cols.push(s+i);
+    const r4=extractByColumns(m,cols,0,dateCol);
+    if(r4.draws.length>10)return{draws:r4.draws,dates:r4.dates,log,strategy:`cols ${s}-${s+14}`};
+  }
+  return{draws:[],dates:[],log,strategy:'nenhuma'};
+}
+function parseCSVText(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  return lines.map(line=>{
+    if(line.includes(';'))return line.split(';').map(s=>s.trim());
+    if(line.includes('\t'))return line.split('\t').map(s=>s.trim());
+    if(line.includes(',')){
+      const out=[];let cur='',q=false;
+      for(let i=0;i<line.length;i++){
+        const c=line[i];
+        if(c==='"'){q=!q;continue;}
+        if(c===','&&!q){out.push(cur.trim());cur='';continue;}
+        cur+=c;
+      }
+      out.push(cur.trim());return out;
+    }
+    return line.split(/\s+/).map(s=>s.trim());
+  });
+}
+
+/* ============================================================ IMPORTAR */
+function handleFile(file){
+  if(!file)return;
+  if(typeof XLSX==='undefined'){sErr();toast('❌ SheetJS não carregou','error');return;}
+  const ext=file.name.split('.').pop().toLowerCase();
+  const dz=$('#dropzone');
+  dz.classList.add('loading');
+  dz.innerHTML=`<div class="spinner"></div><div class="dz-title">PROCESSANDO</div><div class="dz-sub">${file.name}</div>`;
+  $('#diagnosticWrap').innerHTML='';
+  $('#importProgressWrap').style.display='block';
+  $('#importProgress').style.width='10%';
+  $('#importStatus').textContent='Lendo...';
+
+  const r=new FileReader();
+  r.onload=function(e){
+    try{
+      $('#importProgress').style.width='30%';
+      $('#importStatus').textContent='Interpretando...';
+      let m=[],sn=[],ch='',mi='';
+      if(ext==='xlsx'||ext==='xls'){
+        const data=new Uint8Array(e.target.result);
+        const wb=XLSX.read(data,{type:'array',cellDates:false});
+        sn=wb.SheetNames.slice();
+        let bs=-1;
+        for(const n of sn){
+          const sh=wb.Sheets[n];if(!sh)continue;
+          let c=0;for(const k in sh)if(k[0]!=='!')c++;
+          if(c>bs){bs=c;ch=n;}
+        }
+        if(!ch)throw new Error('Sem abas');
+        const rr=sheetToMatrix(wb.Sheets[ch]);
+        m=rr.matrix;mi=rr.info;
+      }else{
+        const text=typeof e.target.result==='string'?e.target.result:new TextDecoder('utf-8').decode(e.target.result);
+        m=parseCSVText(text);ch='CSV';mi=`${m.length} linhas`;
+      }
+      $('#importProgress').style.width='70%';
+      $('#importStatus').textContent='Extraindo...';
+      setTimeout(()=>{
+        const res=extractDraws(m);
+        if(!res.draws.length){
+          sErr();toast('⚠ Parser não encontrou concursos','error');
+          showDiag(m,res,ch,mi);resetDZ();
+          $('#importProgressWrap').style.display='none';
+          return;
+        }
+        $('#importProgress').style.width='100%';
+        $('#importStatus').textContent=`✅ ${res.draws.length}`;
+        S.db=res.draws.map((d,i)=>({n:i+1,d,date:res.dates[i]||null}));
+        saveDB();renderAll();
+        renderFilePreview(file,res.draws.length,`aba "${ch}" · ${res.strategy} · ${res.dates.filter(x=>x).length} datas`);
+        setTimeout(()=>{resetDZ();$('#importProgressWrap').style.display='none';},1200);
+        sBig();
+        toast(`✅ ${res.draws.length} concursos importados`,'success');
+        setTimeout(()=>document.querySelector('[data-panel="database"]').click(),800);
+      },60);
+    }catch(err){
+      console.error(err);
+      sErr();toast('❌ '+err.message,'error');
+      resetDZ();$('#importProgressWrap').style.display='none';
+    }
+  };
+  r.onerror=()=>{sErr();toast('❌ Erro ao ler arquivo','error');resetDZ();$('#importProgressWrap').style.display='none';};
+  if(ext==='xlsx'||ext==='xls')r.readAsArrayBuffer(file);
+  else r.readAsText(file,'UTF-8');
+}
+function resetDZ(){
+  const d=$('#dropzone');
+  d.classList.remove('loading');
+  d.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg><div class="dz-title">ARRASTE O ARQUIVO AQUI</div><div class="dz-sub">ou clique para selecionar</div><div class="dz-formats"><span>XLSX</span><span>XLS</span><span>CSV</span><span>TXT</span></div>`;
+}
+function renderFilePreview(file,c,info){
+  const kb=(file.size/1024).toFixed(1);
+  $('#filePreviewWrap').innerHTML=`<div class="file-preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg><div class="file-info"><div class="file-name">${file.name}</div><div class="file-meta">${kb} KB · ${c} concursos · ${info}</div></div><div class="file-status">✓ CARREGADO</div></div>`;
+}
+function showDiag(m,res,ch,mi){
+  const pv=m.slice(0,20).map((row,i)=>{
+    const cells=(row||[]).slice(0,20).map(v=>{
+      let s=v==null?'':String(v);
+      if(s.length>10)s=s.slice(0,10);
+      return s.padEnd(10,' ');
+    }).join(' | ');
+    return `L${String(i).padStart(2,'0')} │ ${cells}`;
+  }).join('\n');
+  $('#diagnosticWrap').innerHTML=`<div class="card" style="border-color:var(--danger)"><h3 style="color:var(--danger)">⚠ Diagnóstico</h3><div class="hint warn"><strong>${m.length}×${m[0]?m[0].length:0}</strong> linhas lidas.</div><div class="hint"><strong>Aba:</strong> "${ch}" | <strong>Info:</strong> ${mi}<br>${res.log.join('<br>')}</div><pre class="diag">${pv.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre><div class="hint pink">Envie este painel para ajustar o parser.</div></div>`;
+  sErr();
+}
+
+const dz=$('#dropzone');const fi=$('#fileInput');
+dz.addEventListener('click',()=>fi.click());
+fi.addEventListener('change',e=>{const f=e.target.files[0];if(f)handleFile(f);fi.value='';});
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();dz.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();dz.classList.remove('drag');}));
+dz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
+document.addEventListener('dragover',e=>e.preventDefault());
+document.addEventListener('drop',e=>{
+  e.preventDefault();
+  if(e.target.closest('#dropzone'))return;
+  const f=e.dataTransfer.files[0];if(f)handleFile(f);
+});
+
+/* ============================================================ STORAGE */
+function saveDB(){try{localStorage.setItem('lp_db',JSON.stringify(S.db));}catch(e){toast('⚠ Erro ao salvar','error');}}
+function loadDB(){
+  try{
+    const s=localStorage.getItem('lp_db');
+    if(s){
+      const a=JSON.parse(s);
+      if(Array.isArray(a)&&a.length){
+        S.db=a.map(c=>({n:c.n, d:c.d, date:c.date?new Date(c.date):null}));
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function saveConf(){try{localStorage.setItem('lp_conf',JSON.stringify(S.conferencias));}catch(e){}}
+function loadConf(){try{const s=localStorage.getItem('lp_conf');if(s){S.conferencias=JSON.parse(s)||{};}}catch(e){}}
+function saveLote(){try{localStorage.setItem('lp_lote',JSON.stringify(S.lote));}catch(e){}}
+function loadLote(){
+  try{
+    const s=localStorage.getItem('lp_lote');
+    if(s){
+      const a=JSON.parse(s);
+      if(Array.isArray(a)){
+        S.lote=a.map(g=>({
+          concurso:g.concurso,
+          bilhetes:g.bilhetes||[],
+          costUnit:g.costUnit||3.5,
+          date:g.date?new Date(g.date):null,
+          source:g.source||'generated'
+        }));
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function saveRoadmap(){try{localStorage.setItem('lp_roadmap',JSON.stringify(S.roadmapDone||{}));}catch(e){}}
+function loadRoadmap(){try{const s=localStorage.getItem('lp_roadmap');if(s){S.roadmapDone=JSON.parse(s)||{};}}catch(e){}}
+
+/* ============================================================ RENDER */
+function renderAll(){renderStats();renderTable();renderAnalysis();updateBadge();updateDash();renderQueryRange();}
+function updateBadge(){
+  const b=$('#dbBadge');
+  if(S.db.length){b.style.display='inline-block';b.textContent=S.db.length;$('#statusText').textContent='DB · '+S.db.length;}
+  else{b.style.display='none';$('#statusText').textContent='AGUARDANDO';}
+  $('#footerStatus').textContent=S.db.length+' concursos';
+  const cb=$('#confBadge');
+  const cc=Object.keys(S.conferencias).length;
+  if(cc){cb.style.display='inline-block';cb.textContent=cc;}else{cb.style.display='none';}
+}
+function updateDash(){
+  $('#dTotal').textContent=S.db.length;
+  let tickets=0;S.lote.forEach(g=>tickets+=g.bilhetes.length);
+  $('#dTickets').textContent=tickets;
+  const ck=Object.keys(S.conferencias);
+  $('#dConf').textContent=ck.length;
+  let saldo=0;
+  ck.forEach(k=>{const c=S.conferencias[k];saldo+=(c.returned-c.invested);});
+  const el=$('#dSaldo');
+  el.textContent=fmt(saldo);
+  el.className='value '+(saldo>0?'lime':saldo<0?'danger':'lime');
+  const last=S.db.length ? S.db[S.db.length-1] : null;
+  $('#dLastDate').textContent = last
+    ? `Último sorteio: ${fmtDate(last.date)} · concurso #${last.n}`
+    : 'Último sorteio: —';
+}
+function renderQueryRange(){
+  const info=$('#qRangeInfo');
+  if(S.db.length){
+    const f=S.db[0], l=S.db[S.db.length-1];
+    info.textContent=`${S.db.length} concursos · ${fmtDate(f.date)} → ${fmtDate(l.date)}`;
+  } else info.textContent='0 concursos';
+}
+function renderStats(){
+  const n=S.db.length;
+  $('#dbCount').textContent=n;
+  if(!n){ $('#dbFirst').textContent='—'; $('#dbLast').textContent='—'; return; }
+  const f=S.db[0], l=S.db[n-1];
+  $('#dbFirst').textContent='#'+f.n+(f.date?' · '+fmtDate(f.date):'');
+  $('#dbLast').textContent='#'+l.n+(l.date?' · '+fmtDate(l.date):'');
+}
+function renderTable(){
+  const tbody=$('#dbTbody');
+  let data=[...S.db];
+  if(S.order==='desc')data.reverse();
+  if(S.search)data=data.filter(c=>String(c.n).includes(S.search.trim()));
+  const total=data.length;
+  const tp=Math.max(1,Math.ceil(total/S.pageSize));
+  if(S.page>tp)S.page=tp;
+  const st=(S.page-1)*S.pageSize;
+  const pg=data.slice(st,st+S.pageSize);
+  if(!pg.length){
+    tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:30px">Nenhum resultado.</td></tr>`;
+  } else {
+    tbody.innerHTML=pg.map(c=>{
+      const sm=c.d.reduce((a,b)=>a+b,0);
+      const pa=c.d.filter(x=>x%2===0).length;
+      return `<tr><td>#${c.n}</td><td style="white-space:nowrap;color:var(--dim)">${fmtDate(c.date)}</td><td><div class="ball-group">${c.d.map(x=>`<span class="ball small">${pad(x)}</span>`).join('')}</div></td><td>${sm}</td><td>${pa}P / ${15-pa}I</td></tr>`;
+    }).join('');
+  }
+  renderPagination(total,tp);
+}
+function renderPagination(total,tp){
+  const el=$('#dbPagination');
+  if(tp<=1){el.innerHTML=`<div class="info">${total} concursos</div>`;return;}
+  let h=`<div class="info">${total} · pág. ${S.page}/${tp}</div>`;
+  h+=`<button ${S.page===1?'disabled':''} data-page="1">«</button>`;
+  h+=`<button ${S.page===1?'disabled':''} data-page="${S.page-1}">‹</button>`;
+  const s=Math.max(1,S.page-2),e=Math.min(tp,S.page+2);
+  for(let i=s;i<=e;i++)h+=`<button ${i===S.page?'class="active"':''} data-page="${i}">${i}</button>`;
+  h+=`<button ${S.page===tp?'disabled':''} data-page="${S.page+1}">›</button>`;
+  h+=`<button ${S.page===tp?'disabled':''} data-page="${tp}">»</button>`;
+  el.innerHTML=h;
+  el.querySelectorAll('button[data-page]').forEach(b=>b.addEventListener('click',()=>{S.page=+b.dataset.page;renderTable();}));
+}
+$('#dbPageSize').addEventListener('change',e=>{S.pageSize=+e.target.value;S.page=1;renderTable();});
+$('#dbOrder').addEventListener('change',e=>{S.order=e.target.value;S.page=1;renderTable();});
+$('#dbSearch').addEventListener('input',e=>{S.search=e.target.value;S.page=1;renderTable();});
+$('#btnExportDB').addEventListener('click',()=>{
+  if(!S.db.length){toast('⚠ Sem dados','error');return;}
+  const b=new Blob([JSON.stringify(S.db.map(c=>({n:c.n,date:c.date,d:c.d})),null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='lotofacil-db.json';a.click();
+  URL.revokeObjectURL(u);toast('📥 Exportado','success');sOK();
+});
+$('#btnClearDB').addEventListener('click',()=>{
+  if(!confirm('Apagar o banco?'))return;
+  S.db=[];S.duplicatas=null;
+  localStorage.removeItem('lp_db');
+  renderAll();
+  $('#filePreviewWrap').innerHTML='';$('#diagnosticWrap').innerHTML='';
+  toast('🗑 Banco limpo','warn');
+});
+
+/* ============================================================ ANÁLISE ATUALIZADA */
+let currentAnalisePeriod = 'all';
+
+function getFilteredAnaliseDB(){
+  if(!S.db.length) return [];
+  if(currentAnalisePeriod === '30') return S.db.slice(-30);
+  if(currentAnalisePeriod === '100') return S.db.slice(-100);
+  if(currentAnalisePeriod === '2026'){
+    const filtrados = S.db.filter(c => {
+      if(!c.date) return false;
+      const d = (c.date instanceof Date) ? c.date : new Date(c.date);
+      return !isNaN(d.getTime()) && d.getFullYear() === 2026;
+    });
+    return filtrados.length ? filtrados : S.db;
+  }
+  return S.db;
+}
+
+function renderAnalysis(){
+  if(!S.db.length) return;
+  const dataset = getFilteredAnaliseDB();
+  const t = dataset.length;
+  if(!t) return;
+
+  const f = Array(26).fill(0);
+  const ls = Array(26).fill(-1);
+  dataset.forEach((c, i) => {
+    c.d.forEach(n => {
+      f[n]++;
+      ls[n] = i;
+    });
+  });
+
+  let hot = 1, cold = 1;
+  for(let i = 2; i <= 25; i++){
+    if(f[i] > f[hot]) hot = i;
+    if(f[i] < f[cold]) cold = i;
+  }
+
+  const avg = (dataset.reduce((s, c) => s + c.d.reduce((a, b) => a + b, 0), 0) / t).toFixed(1);
+  $('#anTotal').textContent = t + (currentAnalisePeriod !== 'all' ? ' (filtro)' : '');
+  $('#anHot').textContent = pad(hot) + ' (' + f[hot] + '×)';
+  $('#anCold').textContent = pad(cold) + ' (' + f[cold] + '×)';
+  $('#anSum').textContent = avg;
+
+  // 1. TOP 10 MAIS SORTEADAS (Medalhas 🥇 🥈 🥉)
+  const ranked = Array.from({length: 25}, (_, i) => ({n: i + 1, count: f[i + 1]}))
+    .sort((a, b) => b.count - a.count);
+  const medals = ['🥇', '🥈', '🥉', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
+  let topH = '<table class="top-ranking-table"><tbody>';
+  ranked.slice(0, 10).forEach((item, idx) => {
+    const pct = ((item.count / t) * 100).toFixed(1);
+    topH += `<tr>
+      <td style="width:40px"><span class="badge-medal">${medals[idx]}</span></td>
+      <td style="width:50px"><span class="ball small selected">${pad(item.n)}</span></td>
+      <td><strong>${item.count}×</strong></td>
+      <td style="color:var(--dim);text-align:right">${pct}% dos sorteios</td>
+    </tr>`;
+  });
+  topH += '</tbody></table>';
+  $('#anTopTableWrap').innerHTML = topH;
+
+  // 2. MAIS ATRASADAS (Linguagem natural: "seca de X sorteios")
+  const delays = Array.from({length: 25}, (_, i) => {
+    const num = i + 1;
+    const seca = ls[num] < 0 ? t : t - 1 - ls[num];
+    return {n: num, dry: seca};
+  }).sort((a, b) => b.dry - a.dry);
+
+  let dryH = '';
+  delays.slice(0, 5).forEach((item, idx) => {
+    const badgeColor = item.dry >= 5 ? 'var(--danger)' : 'var(--orange)';
+    dryH += `<div class="dry-alert-card">
+      <span class="ball small drawn">${pad(item.n)}</span>
+      <div style="flex:1">
+        <strong>Dezena ${pad(item.n)}</strong>
+        <div style="color:var(--dim);font-size:.78rem">seca de <span style="color:${badgeColor};font-weight:700">${item.dry} sorteio${item.dry === 1 ? '' : 's'}</span> consecutivos</div>
+      </div>
+      <span class="badge ${item.dry >= 4 ? 'lose' : 'info'}">atraso ${item.dry}</span>
+    </div>`;
+  });
+  $('#anDryListWrap').innerHTML = dryH;
+
+  // 3. MAPA DE CALOR 5×5 COM NÚMEROS GRANDES
+  const minF = Math.min(...f.slice(1)), maxF = Math.max(...f.slice(1));
+  const span = Math.max(1, maxF - minF);
+  $('#anHeatRangeInfo').textContent = `Mín: ${minF}× · Máx: ${maxF}×`;
+  let hm = '';
+  for(let i = 1; i <= 25; i++){
+    const t2 = (f[i] - minF) / span;
+    const r = Math.round(0 + t2 * 255);
+    const g = Math.round(240 - t2 * 215);
+    const b2 = Math.round(255 - t2 * 140);
+    const bg = `rgba(${r},${g},${b2},${0.25 + t2 * 0.50})`;
+    const br = `rgba(${r},${g},${b2},${0.55 + t2 * 0.35})`;
+    hm += `<div class="heat-big-cell" style="background:${bg};border-color:${br};box-shadow:0 0 ${Math.round(4 + t2 * 14)}px ${bg}">
+      <span class="heat-big-num">${pad(i)}</span>
+      <span class="heat-big-count">${f[i]}×</span>
+    </div>`;
+  }
+  $('#heatmap').innerHTML = hm;
+
+  // 4. BARRAS DE FREQUÊNCIA INDIVIDUAL
+  const mx = Math.max(...f.slice(1));
+  let h1 = '';
+  for(let i = 1; i <= 25; i++){
+    const p = (f[i] / mx) * 100;
+    h1 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${f[i]}×</span>
+    </div>`;
+  }
+  $('#freqChart').innerHTML = h1;
+
+  // 5. BARRAS DE ATRASO
+  let h2 = '';
+  for(let i = 1; i <= 25; i++){
+    const d = ls[i] < 0 ? t : t - 1 - ls[i];
+    const p = Math.min(100, (d / Math.max(1, t)) * 100);
+    h2 += `<div style="display:grid;grid-template-columns:38px 1fr 52px;align-items:center;gap:10px;margin-bottom:6px;font-size:.78rem;font-family:var(--fm)">
+      <span class="ball small">${pad(i)}</span>
+      <div style="height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:6px"></div>
+      </div>
+      <span style="text-align:right;color:var(--dim)">${d}</span>
+    </div>`;
+  }
+  $('#delayChart').innerHTML = h2;
+}
+
+// Ouvintes dos botões de período da Análise
+(function initPeriodButtons(){
+  const bar = $('#analisePeriodBar');
+  if(!bar) return;
+  bar.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      bar.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentAnalisePeriod = this.dataset.period;
+      renderAnalysis();
+      if(typeof sClick === 'function') sClick();
+      toast('Período atualizado: ' + this.textContent, 'info');
+    });
+  });
+})();
+
+/* ============================================================ CONSULTA */
+function buildQueryGrid(){
+  const g=$('#queryGrid');g.innerHTML='';
+  for(let i=1;i<=25;i++){
+    const el=document.createElement('div');
+    el.className='ball';el.textContent=pad(i);el.dataset.num=i;
+    el.addEventListener('click',function(){
+      const n=+this.dataset.num;
+      if(S.queryDezenas.includes(n)){
+        S.queryDezenas=S.queryDezenas.filter(x=>x!==n);
+        this.classList.remove('selected');
+      }else{
+        if(S.queryDezenas.length>=15){toast('⚠ Máx 15','warn');sErr();return;}
+        S.queryDezenas.push(n);
+        this.classList.add('selected');
+      }
+      $('#qCount').textContent=S.queryDezenas.length;
+      sClick();
+    });
+    g.appendChild(el);
+  }
+}
+buildQueryGrid();
+
+$('#qRandom').addEventListener('click',()=>{
+  const p=Array.from({length:25},(_,i)=>i+1);
+  for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]];}
+  S.queryDezenas=p.slice(0,15).sort((a,b)=>a-b);
+  $$('#queryGrid .ball').forEach(b=>b.classList.toggle('selected',S.queryDezenas.includes(+b.dataset.num)));
+  $('#qCount').textContent=15;sClick();
+});
+$('#qClear').addEventListener('click',()=>{
+  S.queryDezenas=[];
+  $$('#queryGrid .ball').forEach(b=>b.classList.remove('selected'));
+  $('#qCount').textContent='0';
+  $('#qResultWrap').innerHTML='';
+});
+$('#qSearch').addEventListener('click',()=>{
+  if(S.queryDezenas.length!==15){toast('⚠ Selecione 15 dezenas','error');sErr();return;}
+  if(!S.db.length){toast('⚠ Importe um arquivo primeiro','warn');sErr();return;}
+  buscarDezenas(S.queryDezenas,'consulta personalizada');
+});
+$('#qConcSearch').addEventListener('click',()=>{
+  if(!S.db.length){toast('⚠ Importe um arquivo primeiro','warn');sErr();return;}
+  const n=+$('#queryConcNum').value;
+  if(!n||n<1||n>S.db.length){toast('⚠ Número inválido (1 a '+S.db.length+')','error');sErr();return;}
+  const c=S.db[n-1];
+  buscarDezenas(c.d,`concurso #${c.n}`);
+});
+
+function buscarDezenas(draw,origem){
+  const target=new Set(draw);
+  const buckets={15:[],14:[],13:[],12:[],11:[]};
+  S.db.forEach(c=>{
+    let m=0;
+    for(const x of c.d)if(target.has(x))m++;
+    if(m>=11&&buckets[m])buckets[m].push(c);
+  });
+  renderQueryReport(draw,origem,buckets);
+}
+
+function renderQueryReport(draw,origem,buckets){
+  const totalE=buckets[15].length+buckets[14].length+buckets[13].length+buckets[12].length+buckets[11].length;
+  let h=`
+    <div class="card glow">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <h3 style="margin:0;color:var(--cyan)">◈ Resultado da Consulta</h3>
+        <span class="badge info">${origem}</span>
+      </div>
+      <h3 style="color:var(--dim);font-size:.72rem;margin-bottom:8px">DEZENAS CONSULTADAS</h3>
+      <div class="ball-group" style="margin-bottom:18px">
+        ${draw.map(n=>`<span class="ball small selected">${pad(n)}</span>`).join('')}
+      </div>
+      <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="stat"><div class="label">Repetições Exatas (15)</div><div class="value ${buckets[15].length?'orange':'cyan'}" style="font-size:1.3rem">${buckets[15].length}</div></div>
+        <div class="stat"><div class="label">14 pts</div><div class="value lime" style="font-size:1.3rem">${buckets[14].length}</div></div>
+        <div class="stat"><div class="label">13 pts</div><div class="value cyan" style="font-size:1.3rem">${buckets[13].length}</div></div>
+        <div class="stat"><div class="label">12 pts</div><div class="value purple" style="font-size:1.3rem">${buckets[12].length}</div></div>
+      </div>
+      <div class="hint warn"><strong>Total de matches ≥11 pts:</strong> ${totalE} concursos.</div>
+      ${buckets[15].length?`
+        <div class="duplicate-card">
+          <h4>🎉 ACHOU! REPETIÇÃO EXATA DE 15 PONTOS</h4>
+          <p class="subtitle" style="margin-bottom:12px;color:var(--text)">Estas dezenas JÁ saíram no histórico:</p>
+          ${buckets[15].map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,215,0,.2)"><strong style="color:#ffd700;font-family:var(--ft);min-width:140px">#${c.n} · ${fmtDate(c.date)}</strong><div class="ball-group">${c.d.map(x=>`<span class="ball tiny hit">${pad(x)}</span>`).join('')}</div></div>`).join('')}
+        </div>
+      `:`<div class="hint lime">✓ <strong>Nenhuma repetição exata (15 pts).</strong> Este resultado nunca saiu antes.</div>`}
+      ${['14','13','12','11'].map(pts=>{
+        const arr=buckets[pts];
+        if(!arr.length)return '';
+        const labels={'14':'14 PONTOS (1 dezena diferença)','13':'13 PONTOS (2 dezenas)','12':'12 PONTOS (3 dezenas)','11':'11 PONTOS (4 dezenas)'};
+        return `<h3 style="margin-top:24px;color:var(--dim);font-size:.72rem">${labels[pts]} · ${arr.length} encontrados</h3>
+          <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:10px">
+            ${arr.slice(0,200).map(c=>`
+              <div class="report-row">
+                <span class="conc">#${c.n}</span>
+                <span style="color:var(--dim);font-size:.75rem">${fmtDate(c.date)}</span>
+                <div class="ball-group">${c.d.map(x=>`<span class="ball tiny ${draw.includes(x)?'hit':''}">${pad(x)}</span>`).join('')}</div>
+                <span class="pts p${pts}">${pts}</span>
+                <span style="color:var(--dim);text-align:right">${c.d.reduce((a,b)=>a+b,0)} soma</span>
+              </div>`).join('')}
+            ${arr.length>200?`<div style="padding:14px;text-align:center;color:var(--dim);font-size:.8rem">... e mais ${arr.length-200}</div>`:''}
+          </div>`;
+      }).join('')}
+    </div>`;
+  if(origem.startsWith('concurso'))$('#qConcResultWrap').innerHTML=h;
+  else $('#qResultWrap').innerHTML=h;
+  if(buckets[15].length>0){sWin();toast('🎉 Repetição exata encontrada!','success');}
+  else {sOK();toast(`Consulta: ${totalE} matches ≥11 pts`,'success');}
+  setTimeout(()=>{
+    const tgt=origem.startsWith('concurso')?'#qConcResultWrap':'#qResultWrap';
+    $(tgt).scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+}
+
+/* ============================================================ VARREDURA */
+$('#btnScan15').addEventListener('click',()=>execScan(15));
+$('#btnScan14').addEventListener('click',()=>execScan(14));
+
+function execScan(level){
+  if(S.db.length<2){toast('⚠ Importe pelo menos 2 concursos','warn');sErr();return;}
+  const btn=level===15?$('#btnScan15'):$('#btnScan14');
+  btn.disabled=true;const orig=btn.textContent;
+  btn.textContent='Escaneando...';
+  $('#scanProgressWrap').style.display='block';
+  $('#scanProgress').style.width='5%';
+  $('#scanResultWrap').innerHTML='';
+  setTimeout(()=>{
+    const t0=performance.now();
+    const arr=S.db;const n=arr.length;const dups=[];
+    if(level===15){
+      const map=new Map();
+      for(let i=0;i<n;i++){
+        const key=canon(arr[i].d);
+        if(map.has(key)){const prev=map.get(key);dups.push([arr[prev],arr[i]]);}
+        else map.set(key,i);
+      }
+    } else {
+      const map=new Map();
+      for(let i=0;i<n;i++){
+        const d=arr[i].d;
+        for(let j=0;j<15;j++){
+          const sub=d.filter((_,idx)=>idx!==j);
+          const key=canon(sub);
+          if(map.has(key)){
+            const prev=map.get(key);
+            if(prev.conc!==arr[i].n)dups.push([arr[prev.idx],arr[i],sub]);
+          } else map.set(key,{idx:i,conc:arr[i].n});
+        }
+        if(i%500===0)$('#scanProgress').style.width=(20+(i/n)*70)+'%';
+      }
+    }
+    const t1=performance.now();
+    $('#scanProgress').style.width='100%';
+    setTimeout(()=>{$('#scanProgressWrap').style.display='none';$('#scanProgress').style.width='0%';},800);
+    btn.disabled=false;btn.textContent=orig;
+    if(level===15)S.duplicatas={exact:dups,level:15};
+    updateBadge();
+    renderScanReport(level,dups,t1-t0);
+  },50);
+}
+
+function renderScanReport(level,dups,tempo){
+  let h=`<div class="card glow">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <h3 style="margin:0;color:var(--cyan)">◈ Relatório de Varredura</h3>
+      <span class="badge info">${dups.length} ${dups.length===1?'par':'pares'} · ${tempo.toFixed(0)}ms</span>
+    </div>`;
+  if(level===15){
+    h+=`<h3 style="color:var(--dim);font-size:.72rem;margin-bottom:12px">REPETIÇÕES EXATAS DE 15 PONTOS</h3>`;
+    if(dups.length===0){
+      h+=`<div class="hint lime">✓ <strong>Nenhuma repetição exata.</strong> Em ${S.db.length} concursos, todos os resultados são únicos.</div>`;
+    } else {
+      h+=`<div class="hint warn">🎉 <strong>${dups.length} par(es) com o MESMO resultado!</strong></div>`;
+      dups.forEach(([a,b],i)=>{
+        h+=`<div class="duplicate-card">
+          <h4>Par #${i+1} · Concursos #${a.n} (${fmtDate(a.date)}) e #${b.n} (${fmtDate(b.date)})</h4>
+          <div class="ball-group">${a.d.map(x=>`<span class="ball small hit">${pad(x)}</span>`).join('')}</div>
+        </div>`;
+      });
+    }
+  } else {
+    h+=`<h3 style="color:var(--dim);font-size:.72rem;margin-bottom:12px">REPETIÇÕES PARCIAIS DE 14 PONTOS</h3>`;
+    if(dups.length===0){
+      h+=`<div class="hint lime">✓ <strong>Nenhum par com 14 pts em comum.</strong></div>`;
+    } else {
+      h+=`<div class="hint warn">Encontrados <strong>${dups.length}</strong> pares.</div>
+        <div style="max-height:600px;overflow-y:auto;border:1px solid var(--border);border-radius:10px">
+        <table><thead><tr><th>A</th><th>B</th><th>14 dezenas em comum</th></tr></thead><tbody>`;
+      dups.slice(0,300).forEach(([a,b,sub])=>{
+        h+=`<tr><td><strong style="color:var(--cyan)">#${a.n}</strong><br><span style="color:var(--dim);font-size:.7rem">${fmtDate(a.date)}</span></td><td><strong style="color:var(--cyan)">#${b.n}</strong><br><span style="color:var(--dim);font-size:.7rem">${fmtDate(b.date)}</span></td><td><div class="ball-group">${sub.map(x=>`<span class="ball tiny hit">${pad(x)}</span>`).join('')}</div></td></tr>`;
+      });
+      h+=`</tbody></table></div>`;
+      if(dups.length>300)h+=`<p class="subtitle" style="margin-top:10px;text-align:center">... e mais ${dups.length-300}</p>`;
+    }
+  }
+  h+=`</div>`;
+  $('#scanResultWrap').innerHTML=h;
+  if(dups.length>0){sWin();toast(`🔍 ${dups.length} ${dups.length===1?'par':'pares'} encontrados`,'success');}
+  else {sOK();toast('Varredura concluída · 0 pares','warn');}
+  setTimeout(()=>$('#scanResultWrap').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ============================================================ FECHAMENTO */
+function comb(n,k){
+  if(k<0||k>n)return 0;
+  if(k===0||k===n)return 1;
+  k=Math.min(k,n-k);
+  let r=1;
+  for(let i=0;i<k;i++)r=r*(n-i)/(i+1);
+  return Math.round(r);
+}
+function updateFechInfo(){
+  const N=S.fechQty;
+  const totalComb=comb(N,15);
+  const diretoCost=totalComb*COST;
+  let fechCards,garantia,note;
+  if(N===15){fechCards=1;garantia=15;note='Uma aposta simples já cobre tudo.';}
+  else if(N===16){fechCards=1;garantia=14;note='1 cartão já garante 14 pontos! Qualquer sorteio de 15 dentro de 16 tem ≥14 em comum.';}
+  else if(N===17){fechCards=8;garantia=14;note='Fechamento mínimo de 14 pts para 17 dezenas.';}
+  else if(N===18){fechCards=24;garantia=14;note='Fechamento J(18,3) — mínimo conhecido publicado.';}
+  else {fechCards='?';garantia=14;note='Será calculado ao clicar em Gerar (pode demorar).';}
+  const fechCost=typeof fechCards==='number'?fechCards*COST:null;
+  $('#fechInfo').innerHTML=`
+    <div class="hint lime" style="margin:0">
+      <strong>◈ Aposta Direta (Caixa):</strong><br>
+      ${totalComb.toLocaleString('pt-BR')} combinações → <strong>${fmt(diretoCost)}</strong> · garantia 15 pts<br><br>
+      <strong>◈ Fechamento Otimizado:</strong><br>
+      ${fechCards} cartões → <strong>${fechCost?fmt(fechCost):'a calcular'}</strong> · garantia ${garantia} pts<br><br>
+      <em>${note}</em>
+    </div>`;
+  $('#fechQtyLabel').textContent=N;
+  $('#selTotal').textContent=N;
+  $('#selCount').textContent=S.dezenasN.length;
+}
+function buildPicker(){
+  const grid=$('#pickerGrid');grid.innerHTML='';
+  for(let i=1;i<=25;i++){
+    const el=document.createElement('div');
+    el.className='ball';el.textContent=pad(i);el.dataset.num=i;
+    el.addEventListener('click',function(){
+      const n=+this.dataset.num;
+      if(S.dezenasN.includes(n)){
+        S.dezenasN=S.dezenasN.filter(x=>x!==n);
+        this.classList.remove('selected');
+      }else{
+        if(S.dezenasN.length>=S.fechQty){toast('⚠ Máx '+S.fechQty,'warn');sErr();return;}
+        S.dezenasN.push(n);
+        this.classList.add('selected');
+      }
+      $('#selCount').textContent=S.dezenasN.length;
+      sClick();
+    });
+    grid.appendChild(el);
+  }
+}
+buildPicker();
+updateFechInfo();
+$('#fechQty').addEventListener('change',function(){
+  S.fechQty=+this.value;
+  if(S.dezenasN.length>S.fechQty){
+    S.dezenasN=S.dezenasN.slice(0,S.fechQty);
+    $$('#pickerGrid .ball').forEach(b=>b.classList.toggle('selected',S.dezenasN.includes(+b.dataset.num)));
+    $('#selCount').textContent=S.dezenasN.length;
+  }
+  updateFechInfo();
+  $('#fechResult').style.display='none';
+  sClick();
+});
+$('#btnRandom18').addEventListener('click',()=>{
+  const pool=Array.from({length:25},(_,i)=>i+1);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  S.dezenasN=pool.slice(0,S.fechQty).sort((a,b)=>a-b);
+  $$('#pickerGrid .ball').forEach(b=>b.classList.toggle('selected',S.dezenasN.includes(+b.dataset.num)));
+  $('#selCount').textContent=S.fechQty;sBig();
+});
+$('#btnClear18').addEventListener('click',()=>{
+  S.dezenasN=[];
+  $$('#pickerGrid .ball').forEach(b=>b.classList.remove('selected'));
+  $('#selCount').textContent='0';
+  $('#fechResult').style.display='none';
+});
+$('#btnAuto18').addEventListener('click',()=>{
+  if(!S.db.length){toast('⚠ Importe um arquivo primeiro','warn');sErr();return;}
+  const freq=Array(26).fill(0);
+  S.db.forEach(c=>c.d.forEach(n=>freq[n]++));
+  const ranked=Array.from({length:25},(_,i)=>({n:i+1,f:freq[i+1]})).sort((a,b)=>b.f-a.f).slice(0,S.fechQty).map(x=>x.n).sort((a,b)=>a-b);
+  S.dezenasN=ranked;
+  $$('#pickerGrid .ball').forEach(b=>b.classList.toggle('selected',ranked.includes(+b.dataset.num)));
+  $('#selCount').textContent=S.fechQty;
+  toast('✅ '+S.fechQty+' mais quentes aplicadas','success');sOK();
+});
+function combinations(arr,k){
+  const out=[];const n=arr.length;
+  const idx=Array.from({length:k},(_,i)=>i);
+  while(true){
+    out.push(idx.map(i=>arr[i]));
+    let i=k-1;
+    while(i>=0&&idx[i]===n-k+i)i--;
+    if(i<0)break;
+    idx[i]++;
+    for(let j=i+1;j<k;j++)idx[j]=idx[j-1]+1;
+  }
+  return out;
+}
+function generateFechamentoN(dezenas){
+  const N=dezenas.length;
+  if(N<=16)return [dezenas.slice(0,15).sort((a,b)=>a-b)];
+  const t=N-15;
+  const subsets=combinations([...Array(N).keys()],t);
+  const total=subsets.length;
+  const coverage=subsets.map(T=>{
+    const Tset=new Set(T);const list=[];
+    for(let i=0;i<total;i++){
+      const S2=subsets[i];let c=0;
+      for(const x of S2)if(Tset.has(x))c++;
+      if(c>=t-1)list.push(i);
+    }
+    return list;
+  });
+  const covered=new Uint8Array(total);
+  let cnt=0;const chosen=[];const chosenSet=new Set();
+  while(cnt<total){
+    let best=-1,bestGain=-1;
+    for(let i=0;i<total;i++){
+      if(chosenSet.has(i))continue;
+      let g=0;
+      for(const u of coverage[i])if(!covered[u])g++;
+      if(g>bestGain){bestGain=g;best=i;}
+    }
+    if(best<0||bestGain===0)break;
+    chosen.push(best);chosenSet.add(best);
+    for(const u of coverage[best])if(!covered[u]){covered[u]=1;cnt++;}
+  }
+  let imp=true;
+  while(imp){
+    imp=false;
+    for(let i=0;i<chosen.length;i++){
+      const test=chosen.filter((_,idx)=>idx!==i);
+      if(stillCovers(test,coverage,total)){chosen.splice(i,1);imp=true;break;}
+    }
+  }
+  return chosen.map(idx=>{
+    const comp=new Set(subsets[idx]);
+    return dezenas.filter((_,i)=>!comp.has(i)).sort((a,b)=>a-b);
+  });
+}
+function stillCovers(chosen,coverage,total){
+  const cov=new Uint8Array(total);let c=0;
+  for(const x of chosen)for(const u of coverage[x])if(!cov[u]){cov[u]=1;c++;}
+  return c===total;
+}
+function validateClosure(cards,dezenas,onProg){
+  const draws=combinations(dezenas,15);
+  const total=draws.length;
+  const sets=cards.map(c=>new Set(c));
+  for(let i=0;i<total;i++){
+    const d=draws[i];let ok=false;
+    for(const cs of sets){
+      let m=0;for(const x of d)if(cs.has(x))m++;
+      if(m>=14){ok=true;break;}
+    }
+    if(!ok)return{ok:false};
+    if(onProg&&i%40===0)onProg(i/total);
+  }
+  if(onProg)onProg(1);
+  return{ok:true};
+}
+$('#btnGerarFech').addEventListener('click',()=>{
+  const N=S.fechQty;
+  if(S.dezenasN.length!==N){toast('⚠ Selecione '+N+' dezenas','error');sErr();return;}
+  const btn=$('#btnGerarFech');
+  btn.disabled=true;btn.textContent='Calculando...';
+  toast('⚙ Gerando fechamento para '+N+' dezenas...','warn');
+  setTimeout(()=>{
+    const t0=performance.now();
+    const cards=generateFechamentoN(S.dezenasN);
+    const t1=performance.now();
+    S.fechCards=cards;
+    const diretoComb=comb(N,15);
+    const diretoCost=diretoComb*COST;
+    const fechCost=cards.length*COST;
+    const economia=diretoCost-fechCost;
+    $('#fechResult').style.display='block';
+    $('#fCards').textContent=cards.length;
+    $('#fGuar').textContent='14 pts';
+    $('#fCusto').textContent=fmt(fechCost);
+    $('#fEconomia').textContent=fmt(economia);
+    let html='';
+    cards.forEach((c,i)=>{
+      html+='<div class="ticket"><div class="ticket-head"><span class="ticket-id">CARTÃO #'+pad(i+1)+'</span><span class="ticket-meta">LOTOFÁCIL<br>15 DEZENAS</span></div><div class="ball-group">'+c.map(n=>'<span class="ball small">'+pad(n)+'</span>').join('')+'</div></div>';
+    });
+    $('#fechCards').innerHTML=html;
+    $('#fProg').style.width='0%';
+    setTimeout(()=>{
+      const res=validateClosure(cards,S.dezenasN,p=>{$('#fProg').style.width=(p*100)+'%';});
+      if(res.ok){
+        toast('✅ '+cards.length+' cartões validados em '+(t1-t0).toFixed(0)+'ms','success');
+        sBig();
+      } else {
+        toast('⚠ Validação falhou','error');sErr();
+      }
+      btn.disabled=false;btn.textContent='⚡ Gerar Fechamento';
+    },40);
+  },40);
+});
+$('#btnFechTxt').addEventListener('click',()=>{
+  if(!S.fechCards.length)return;
+  const txt=S.fechCards.map((c,i)=>'Cartão '+pad(i+1)+': '+c.map(pad).join(' ')).join('\n');
+  const blob=new Blob([txt],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='fechamento.txt';a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 Exportado','success');
+});
+$('#btnFechParaLote').addEventListener('click',()=>{
+  if(!S.fechCards.length){ toast('⚠ Gere um fechamento primeiro','error'); sErr(); return; }
+  const concStr = prompt('Para qual número de concurso enviar esses cartões?', $('#bConcIni').value || '3789');
+  if(!concStr) return;
+  const conc = +concStr;
+  if(!conc || conc < 1){ toast('⚠ Concurso inválido','error'); sErr(); return; }
+  const dt = dataDoConcurso(conc);
+  COST = parseFloat($('#bCost').value) || COST;
+
+  let group = S.lote.find(g => g.concurso === conc);
+  if(!group){
+    group = { concurso: conc, bilhetes: [], costUnit: COST, date: dt, source: 'generated' };
+    S.lote.push(group);
+    S.lote.sort((a,b)=>a.concurso-b.concurso);
+  }
+  S.fechCards.forEach(c => group.bilhetes.push([...c]));
+  saveLote(); renderLote(); updateDash();
+
+  const tk = S.lote.reduce((s,g)=>s+g.bilhetes.length,0);
+  $('#bTotal').textContent = tk;
+  $('#bCusto').textContent = fmt(tk * COST);
+
+  sBig(); toast(`✅ ${S.fechCards.length} cartões enviados para concurso #${conc}`,'success');
+
+  document.querySelector('[data-panel="bilhetes"]').click();
+  setTimeout(()=>{
+    const el = document.getElementById('group-'+conc);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 200);
+});
+
+/* ============================================================ BILHETES */
+function shuffle(a){
+  const ar=[...a];
+  for(let i=ar.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ar[i],ar[j]]=[ar[j],ar[i]];}
+  return ar;
+}
+function genByMethod(m,size){
+  const p=Array.from({length:25},(_,i)=>i+1);
+  if(m==='random'||!S.db.length)return shuffle(p).slice(0,size).sort((a,b)=>a-b);
+  const f=Array(26).fill(0);
+  S.db.forEach(c=>c.d.forEach(n=>f[n]++));
+  let w=p.map(n=>f[n]+1);
+  if(m==='hot')w=p.map(n=>f[n]);
+  if(m==='cold')w=p.map(n=>1/(f[n]+1)*1000);
+  if(m==='balanced'){
+    const minP=Math.max(0, Math.floor(size/2)-2);
+    const maxP=Math.min(size, Math.ceil(size/2)+2);
+    for(let a=0;a<300;a++){
+      const t=shuffle(p).slice(0,size);
+      const pa=t.filter(n=>n%2===0).length;
+      if(pa>=minP&&pa<=maxP)return t.sort((a,b)=>a-b);
+    }
+    return shuffle(p).slice(0,size).sort((a,b)=>a-b);
+  }
+  const it=p.map((n,i)=>({n,w:w[i]}));
+  const out=[];
+  for(let i=0;i<size&&it.length;i++){
+    const tot=it.reduce((s,x)=>s+x.w,0);
+    let r=Math.random()*tot,idx=0;
+    for(;idx<it.length;idx++){r-=it[idx].w;if(r<=0)break;}
+    if(idx>=it.length)idx=it.length-1;
+    out.push(it[idx].n);it.splice(idx,1);
+  }
+  return out.sort((a,b)=>a-b);
+}
+
+/* ===== Cadastro Manual ===== */
+(function initManualForm(){
+  const grid = $('#manGrid');
+  if(!grid) return;
+  const temp = [];
+  let userTouchedDate = false;
+
+  function refresh(){
+    $('#manCount').textContent = temp.length;
+    const conc = +$('#manConc').value;
+    const dt = dataDoConcurso(conc);
+    $('#manInfoConcurso').innerHTML = dt
+      ? `ℹ️ Concurso #${conc} encontrado no banco · data: <strong style="color:var(--lime)">${fmtDate(dt)}</strong>`
+      : (conc ? `ℹ️ Concurso #${conc} não está no banco importado (você pode cadastrar a data manualmente).` : '');
+    if(dt && !userTouchedDate){
+      $('#manDate').value = dataInputValue(dt);
+    }
+  }
+
+  for(let i=1;i<=25;i++){
+    const el = document.createElement('div');
+    el.className='ball'; el.textContent=pad(i); el.dataset.num=i;
+    el.addEventListener('click',function(){
+      const n = +this.dataset.num;
+      if(temp.includes(n)){ temp.splice(temp.indexOf(n),1); this.classList.remove('drawn'); }
+      else{ if(temp.length>=15){toast('⚠ Máx 15','warn');sErr();return;} temp.push(n); this.classList.add('drawn'); }
+      refresh(); sClick();
+    });
+    grid.appendChild(el);
+  }
+
+  $('#manConc').addEventListener('change', refresh);
+  $('#manDate').addEventListener('change', ()=>{ userTouchedDate = true; });
+
+  $('#manParse').addEventListener('click',()=>{
+    const raw = $('#manPaste').value;
+    const nums = [...new Set((raw.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=25))];
+    if(nums.length !== 15){ toast('⚠ Precisa de 15 dezenas distintas (achei '+nums.length+')','error'); sErr(); return; }
+    temp.length = 0; temp.push(...nums.sort((a,b)=>a-b));
+    $$('#manGrid .ball').forEach(b=>b.classList.toggle('drawn',temp.includes(+b.dataset.num)));
+    refresh(); sOK(); toast('✅ Dezenas preenchidas','success');
+  });
+
+  $('#manClear').addEventListener('click',()=>{
+    temp.length = 0;
+    $$('#manGrid .ball').forEach(b=>b.classList.remove('drawn'));
+    $('#manPaste').value = '';
+    refresh();
+  });
+
+  $('#manSave').addEventListener('click',()=>{
+    if(temp.length !== 15){ toast('⚠ Selecione 15 dezenas','error'); sErr(); return; }
+    const conc = +$('#manConc').value;
+    if(!conc || conc < 1){ toast('⚠ Concurso inválido','error'); sErr(); return; }
+    const cost = parseFloat($('#manCost').value) || 3.5;
+    const dtBanco = dataDoConcurso(conc);
+    const dtManual = dataFromInput($('#manDate').value);
+    const dt = dtManual || dtBanco;
+
+    let group = S.lote.find(g => g.concurso === conc);
+    if(!group){
+      group = { concurso: conc, bilhetes: [], costUnit: cost, date: dt, source: 'manual' };
+      S.lote.push(group);
+      S.lote.sort((a,b)=>a.concurso-b.concurso);
+    } else {
+      if(!group.date) group.date = dt;
+      if(group.source !== 'manual') group.source = 'manual';
+      group.costUnit = cost;
+    }
+    group.bilhetes.push([...temp].sort((a,b)=>a-b));
+
+    saveLote(); renderLote(); updateDash();
+
+    const tk = S.lote.reduce((s,g)=>s+g.bilhetes.length,0);
+    $('#bTotal').textContent = tk;
+    $('#bCusto').textContent = fmt(tk * COST);
+
+    temp.length = 0;
+    $$('#manGrid .ball').forEach(b=>b.classList.remove('drawn'));
+    $('#manPaste').value = '';
+    refresh();
+    sBig(); toast('✅ Aposta cadastrada no concurso #'+conc,'success');
+  });
+
+  refresh();
+})();
+
+/* ===== Gerar Lote (Acumula sem apagar concursos anteriores) ===== */
+$('#btnGerarLote').addEventListener('click',()=>{
+  const ini=Math.max(1,+$('#bConcIni').value||1);
+  const nc=Math.max(1,Math.min(100,+$('#bConc').value||5));
+  const np=Math.max(1,Math.min(20,+$('#bPer').value||3));
+  const size=+$('#bSize').value||15;
+  const m=$('#bMethod').value;
+  COST=parseFloat($('#bCost').value)||3.5;
+
+  let substituir = false;
+  if(S.lote.length > 0){
+    const resp = confirm(
+      `Você já possui ${S.lote.length} concurso(s) com bilhetes cadastrados.\n\n` +
+      `• Clique em [OK] para ADICIONAR os novos bilhetes sem apagar os anteriores (Recomendado).\n` +
+      `• Clique em [Cancelar] se preferir SUBSTITUIR e apagar tudo.`
+    );
+    if(!resp){
+      if(!confirm('Tem certeza de que deseja APAGAR TODOS os bilhetes anteriores e começar do zero?')) return;
+      substituir = true;
+    }
+  }
+
+  if(substituir){
+    S.lote = [];
+    S.conferencias = {};
+  }
+
+  let novosTotal = 0;
+  for(let c=0;c<nc;c++){
+    const conc = ini+c;
+    const bil=[];
+    for(let i=0;i<np;i++){
+      bil.push(genByMethod(m,size));
+      novosTotal++;
+    }
+
+    let group = S.lote.find(g => g.concurso === conc);
+    if(group){
+      bil.forEach(b => group.bilhetes.push(b));
+      group.costUnit = COST;
+      if(!group.date) group.date = dataDoConcurso(conc);
+    } else {
+      S.lote.push({
+        concurso: conc,
+        bilhetes: bil,
+        costUnit: COST,
+        date: dataDoConcurso(conc),
+        source: 'generated'
+      });
+    }
+  }
+
+  S.lote.sort((a,b)=>a.concurso-b.concurso);
+  saveLote();
+  renderLote();
+  updateDash();
+
+  const total = S.lote.reduce((s,g)=>s+g.bilhetes.length, 0);
+  $('#bTotal').textContent = total;
+  $('#bCusto').textContent = fmt(total * COST);
+  $('#bMetodo').textContent = m.toUpperCase();
+
+  toast(`✅ ${novosTotal} bilhete(s) gerado(s) e adicionados com sucesso!`, 'success');
+  sBig();
+});
+
+/* ===== Editar / Remover ===== */
+window.editarBilhete = function(conc, idx){
+  const group = S.lote.find(g => g.concurso === conc);
+  if(!group || !group.bilhetes[idx]) return;
+  const atual = group.bilhetes[idx];
+  const novo = prompt(
+    `Editar bilhete #${pad(idx+1)} do concurso #${conc}\n\nDezenas atuais:\n${atual.map(pad).join(' ')}\n\nDigite as 15 novas dezenas (espaço/vírgula):`,
+    atual.map(pad).join(' ')
+  );
+  if(novo === null) return;
+  const nums = [...new Set((novo.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=25))];
+  if(nums.length !== 15){ toast('⚠ Precisa de 15 dezenas distintas (achei '+nums.length+')','error'); sErr(); return; }
+  group.bilhetes[idx] = nums.sort((a,b)=>a-b);
+  if(S.conferencias['c'+conc]){ delete S.conferencias['c'+conc]; saveConf(); }
+  saveLote(); renderLote(); renderConfHistory(); updateDash();
+  sOK(); toast('✅ Bilhete #'+(idx+1)+' atualizado','success');
+};
+window.removerBilhete = function(conc, idx){
+  const group = S.lote.find(g => g.concurso === conc);
+  if(!group) return;
+  if(!confirm('Remover bilhete #'+(idx+1)+' do concurso #'+conc+'?')) return;
+  group.bilhetes.splice(idx,1);
+  if(group.bilhetes.length === 0) S.lote = S.lote.filter(g => g.concurso !== conc);
+  if(S.conferencias['c'+conc]){ delete S.conferencias['c'+conc]; saveConf(); }
+  saveLote(); renderLote(); renderConfHistory(); updateDash();
+  sOK(); toast('🗑 Bilhete removido','warn');
+};
+window.removerConcurso = function(conc){
+  if(!confirm('Remover TODOS os bilhetes do concurso #'+conc+'?')) return;
+  S.lote = S.lote.filter(g => g.concurso !== conc);
+  delete S.conferencias['c'+conc];
+  saveConf(); saveLote();
+  renderLote(); renderConfHistory(); updateDash();
+  sOK(); toast('🗑 Concurso #'+conc+' removido','warn');
+};
+
+/* ===== renderLote ===== */
+function renderLote(){
+  const area = $('#loteArea');
+  if(!S.lote.length){
+    area.innerHTML = '<div class="card"><p class="subtitle">Nenhum bilhete cadastrado. Use a aba ✍️ Cadastrar Manual ou ⚡ Gerar Automático.</p></div>';
+    return;
+  }
+  let h = '';
+  S.lote.forEach(group => {
+    const key = 'c' + group.concurso;
+    const conf = S.conferencias[key];
+    const dataConc = group.date || dataDoConcurso(group.concurso);
+    const custo = (group.costUnit || COST);
+    const investido = group.bilhetes.length * custo;
+
+    const badge = conf
+      ? (conf.returned > 0
+          ? `<span class="badge win">CONFERIDO · +${fmt(conf.returned)}</span>`
+          : `<span class="badge lose">CONFERIDO · SEM PRÊMIO</span>`)
+      : '<span class="badge pending">PENDENTE</span>';
+
+    const origem = group.source === 'manual'
+      ? '<span class="badge info">MANUAL</span>'
+      : '<span class="badge info">GERADO</span>';
+
+    let resumoAcertos = '';
+    if(conf && conf.results){
+      const dist = {15:0,14:0,13:0,12:0,11:0};
+      conf.results.forEach(r => { if(dist[r.matches] !== undefined) dist[r.matches]++; });
+      const totalPremiados = conf.results.filter(r => r.matches >= 11).length;
+      resumoAcertos = `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-family:var(--fm);font-size:.72rem">
+          ${[15,14,13,12,11].map(p => dist[p] > 0
+            ? `<span class="badge win">${p} pts × ${dist[p]}</span>`
+            : '').join('')}
+          <span class="badge lose">${totalPremiados} premiado(s)</span>
+        </div>`;
+    }
+
+    h += `<div class="card" id="group-${group.concurso}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="margin:0;color:var(--cyan);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            ◈ CONCURSO #${group.concurso}
+            <span style="color:var(--dim);font-family:var(--fm);font-size:.75rem;font-weight:400">
+              ${dataConc ? '📅 '+fmtDate(dataConc) : '📅 data não cadastrada'}
+            </span>
+            ${badge} ${origem}
+          </h3>
+          <div style="font-family:var(--fm);font-size:.78rem;color:var(--dim);margin-top:6px">
+            ${group.bilhetes.length} bilhete(s) · Investido: <strong style="color:var(--pink)">${fmt(investido)}</strong>
+            ${conf ? ' · Recebido: <strong style="color:var(--lime)">'+fmt(conf.returned)+'</strong>' : ''}
+            ${conf ? ' · Saldo: <strong style="color:'+(conf.returned-investido>0?'var(--lime)':conf.returned-investido<0?'var(--danger)':'var(--dim)')+'">'+fmt(conf.returned-investido)+'</strong>' : ''}
+          </div>
+          ${resumoAcertos}
+        </div>
+        <div class="btn-row">
+          <button class="btn lime small" onclick="openConferencia(${group.concurso})">🎯 Conferir</button>
+          <button class="btn ghost small" onclick="removerConcurso(${group.concurso})" title="Remover concurso">🗑</button>
+        </div>
+      </div>
+      <div id="conf-panel-${group.concurso}"></div>
+      <div id="tickets-${group.concurso}">`;
+
+    group.bilhetes.forEach((b, i) => {
+      const res = conf && conf.results ? conf.results[i] : null;
+      const win = res && res.matches >= 11;
+      h += `<div class="ticket ${win?'win':''}">
+        <div class="ticket-head">
+          <span class="ticket-id">BILHETE #${pad(i+1)}</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="ticket-meta">LOTOFÁCIL<br>${b.length} DEZENAS</span>
+            <button class="btn ghost small" onclick="editarBilhete(${group.concurso},${i})" title="Editar">✏️</button>
+            <button class="btn ghost small" onclick="removerBilhete(${group.concurso},${i})" title="Remover">🗑</button>
+          </div>
+        </div>
+        <div class="ball-group">${b.map(n=>{const isHit=res&&res.draw&&res.draw.includes(n);return `<span class="ball small ${isHit?'hit':''}">${pad(n)}</span>`;}).join('')}</div>
+        ${res?`<div class="ticket-result"><span class="score ${win?'win':'lose'}">${res.matches} PONTOS</span><span class="${win?'prize':''}" style="${win?'':'color:var(--dim)'}">${win?fmt(res.prize):'—'}</span></div>`:''}
+      </div>`;
+    });
+    h += `</div></div>`;
+  });
+  area.innerHTML = h;
+}
+
+window.openConferencia=function(conc){
+  const group=S.lote.find(g=>g.concurso===conc);
+  if(!group)return;
+  const panel=$('#conf-panel-'+conc);if(!panel)return;
+  if(panel.dataset.open==='1'){panel.innerHTML='';panel.dataset.open='0';return;}
+  panel.dataset.open='1';
+  const key='c'+conc;
+  let conf=S.conferencias[key];
+  const prevDraw = conf && conf.draw ? [...conf.draw] : [];
+  const pTab = (conf && conf.prizeTable) || {11:7,12:14,13:35,14:2260,15:0};
+
+  const dbEntry = S.db.find(c => c.n === conc);
+  const dbDraw = dbEntry ? [...dbEntry.d] : null;
+  const initialDraw = prevDraw.length ? prevDraw : (dbDraw || []);
+  const dtConc = group.date || dataDoConcurso(conc);
+
+  panel.innerHTML=`
+    <div class="conference-panel">
+      <h3 style="color:var(--lime);margin-bottom:12px">🎯 Conferência do Concurso #${conc} ${dtConc?'· '+fmtDate(dtConc):''}</h3>
+      ${dbDraw && !prevDraw.length ? `<div class="hint lime" style="margin-bottom:10px">✅ Sorteio do concurso #${conc} puxado automaticamente do banco.</div>` : ''}
+      <div class="grid grid-2" style="gap:20px">
+        <div>
+          <div class="hint lime" style="margin-bottom:8px"><strong>1.</strong> Marque as 15 dezenas sorteadas:</div>
+          <div class="ball-grid conference" id="conf-grid-${conc}"></div>
+          <p class="subtitle" style="margin-top:8px;font-size:.78rem">Selecionadas: <strong id="conf-count-${conc}">${initialDraw.length}</strong>/15</p>
+        </div>
+        <div>
+          <div class="hint lime" style="margin-bottom:8px"><strong>2.</strong> Tabela de prêmios:</div>
+          <table class="prize-table">
+            <thead><tr><th>Pontos</th><th>Prêmio (R$)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>15</strong></td><td><input type="number" step="0.01" min="0" data-prize="15" value="${pTab[15]}"></td></tr>
+              <tr><td><strong>14</strong></td><td><input type="number" step="0.01" min="0" data-prize="14" value="${pTab[14]}"></td></tr>
+              <tr><td><strong>13</strong></td><td><input type="number" step="0.01" min="0" data-prize="13" value="${pTab[13]}"></td></tr>
+              <tr><td><strong>12</strong></td><td><input type="number" step="0.01" min="0" data-prize="12" value="${pTab[12]}"></td></tr>
+              <tr><td><strong>11</strong></td><td><input type="number" step="0.01" min="0" data-prize="11" value="${pTab[11]}"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn primary" onclick="calcularConferencia(${conc})">✓ Calcular Resultado</button>
+        <button class="btn ghost" onclick="closeConferencia(${conc})">Cancelar</button>
+      </div>
+    </div>`;
+  const grid=$('#conf-grid-'+conc);
+  grid.innerHTML='';
+  const tempDraw = [...initialDraw];
+  for(let i=1;i<=25;i++){
+    const el=document.createElement('div');
+    el.className='ball';el.textContent=pad(i);el.dataset.num=i;
+    if(tempDraw.includes(i))el.classList.add('drawn');
+    el.addEventListener('click',function(){
+      const n=+this.dataset.num;
+      if(tempDraw.includes(n)){tempDraw.splice(tempDraw.indexOf(n),1);this.classList.remove('drawn');}
+      else{if(tempDraw.length>=15){toast('⚠ Máx 15','warn');sErr();return;}tempDraw.push(n);this.classList.add('drawn');}
+      $('#conf-count-'+conc).textContent=tempDraw.length;
+      sClick();
+    });
+    grid.appendChild(el);
+  }
+  sClick();
+};
+window.closeConferencia=function(conc){
+  const p=$('#conf-panel-'+conc);
+  if(p){p.innerHTML='';p.dataset.open='0';}
+};
+window.calcularConferencia=function(conc){
+  const key='c'+conc;
+  const group=S.lote.find(g=>g.concurso===conc);if(!group)return;
+  const panel=$('#conf-panel-'+conc);
+  const grid=panel.querySelectorAll('.ball.drawn');
+  const draw=[...grid].map(b=>+b.textContent).sort((a,b)=>a-b);
+  if(draw.length!==15){toast('⚠ Marque 15 dezenas','error');sErr();return;}
+  const prizes={};
+  panel.querySelectorAll('[data-prize]').forEach(inp=>{prizes[+inp.dataset.prize]=parseFloat(inp.value)||0;});
+  const results=group.bilhetes.map((b,i)=>{
+    const set=new Set(b);let m=0;
+    for(const n of draw)if(set.has(n))m++;
+    const prize=m>=11?(prizes[m]||0):0;
+    return{ticketIdx:i,matches:m,prize,draw:[...draw]};
+  });
+  const unit = group.costUnit || COST;
+  const invested=group.bilhetes.length*unit;
+  const returned=results.reduce((s,r)=>s+r.prize,0);
+  S.conferencias[key]={concurso:conc,draw,prizeTable:prizes,results,invested,returned,timestamp:Date.now()};
+  saveConf();updateBadge();updateDash();renderConfHistory();
+  panel.innerHTML='';panel.dataset.open='0';
+  renderLote();
+  if(returned>0){sWin();toast(`🎉 Prêmio total: ${fmt(returned)}`,'success');}
+  else{toast(`Conferido · ${results.filter(r=>r.matches>=11).length} bilhetes premiados`,'warn');sOK();}
+};
+function renderConfHistory(){
+  const wrap=$('#confHistoryWrap');
+  const keys=Object.keys(S.conferencias).map(k=>({k,c:S.conferencias[k]})).sort((a,b)=>b.c.concurso-a.c.concurso);
+  if(!keys.length){
+    wrap.innerHTML='<p class="subtitle">Nenhuma conferência registrada.</p>';
+    $('#confTotal').textContent='0';$('#confInvestido').textContent='R$ 0,00';
+    $('#confRecebido').textContent='R$ 0,00';$('#confSaldo').textContent='R$ 0,00';
+    return;
+  }
+  let ti=0,tr=0;
+  let h='<table><thead><tr><th>Conc.</th><th>Data</th><th>Bilhetes</th><th>Investido</th><th>Recebido</th><th>Saldo</th><th>Ações</th></tr></thead><tbody>';
+  keys.forEach(({k,c})=>{
+    ti+=c.invested;tr+=c.returned;
+    const s=c.returned-c.invested;
+    const dt=c.timestamp?new Date(c.timestamp).toLocaleString('pt-BR'):'—';
+    const totalPremiados = c.results ? c.results.filter(r=>r.matches>=11).length : 0;
+    h+=`<tr><td><strong>#${c.concurso}</strong></td><td>${dt}</td><td>${c.results.length} (${totalPremiados} premiados)</td><td>${fmt(c.invested)}</td><td style="color:${c.returned>0?'var(--lime)':'var(--dim)'}">${fmt(c.returned)}</td><td style="color:${s>0?'var(--lime)':s<0?'var(--danger)':'var(--dim)'};font-weight:700">${fmt(s)}</td><td><button class="btn ghost small" onclick="delConferencia(${c.concurso})">🗑</button></td></tr>`;
+  });
+  h+='</tbody></table>';
+  wrap.innerHTML=h;
+  $('#confTotal').textContent=keys.length;
+  $('#confInvestido').textContent=fmt(ti);
+  $('#confRecebido').textContent=fmt(tr);
+  const se=$('#confSaldo');
+  se.textContent=fmt(tr-ti);
+  se.className='value '+(tr-ti>0?'lime':tr-ti<0?'danger':'lime');
+}
+window.delConferencia=function(conc){
+  if(!confirm('Apagar conferência do concurso #'+conc+'?'))return;
+  delete S.conferencias['c'+conc];
+  saveConf();updateBadge();updateDash();renderConfHistory();renderLote();
+  toast('🗑 Apagada','warn');
+};
+$('#btnExportConf').addEventListener('click',()=>{
+  if(!Object.keys(S.conferencias).length){toast('⚠ Sem dados','error');return;}
+  const b=new Blob([JSON.stringify(S.conferencias,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='conferencias.json';a.click();
+  URL.revokeObjectURL(u);toast('📥 Exportado','success');sOK();
+});
+$('#btnClearConf').addEventListener('click',()=>{
+  if(!confirm('Apagar TODAS as conferências?'))return;
+  S.conferencias={};
+  saveConf();updateBadge();updateDash();renderConfHistory();renderLote();
+  toast('🗑','warn');
+});
+$('#btnLimparLote').addEventListener('click',()=>{
+  if(!confirm('Apagar TODOS os bilhetes cadastrados?'))return;
+  S.lote=[];S.conferencias={};saveLote();saveConf();
+  $('#loteArea').innerHTML='';
+  $('#bTotal').textContent='0';$('#bCusto').textContent='R$ 0,00';
+  renderConfHistory();updateBadge();updateDash();
+  toast('🗑 Tudo limpo','warn');
+});
+$('#btnExportTxt').addEventListener('click',()=>{
+  if(!S.lote.length){toast('⚠ Sem bilhetes','error');return;}
+  let t='LOTTERY PRO\n\n';
+  S.lote.forEach(g=>{
+    const dt = g.date || dataDoConcurso(g.concurso);
+    t+=`=== CONCURSO #${g.concurso}${dt?' · '+fmtDate(dt):''} (${g.source||'?'}) ===\n`;
+    g.bilhetes.forEach((b,i)=>{t+=`  ${pad(i+1)}: ${b.map(pad).join(' ')}\n`;});
+    t+='\n';
+  });
+  const b=new Blob([t],{type:'text/plain'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');
+  a.href=u;a.download='lote.txt';a.click();
+  URL.revokeObjectURL(u);toast('📥 Exportado','success');
+});
+
+/* ============================================================ ROADMAP */
+function renderRoadmap(){
+  const wrap = $('#rmPhases');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+
+  const prioLabel = {
+    done: {txt:'✅ FEITO', cls:'done'},
+    testing: {txt:'🟡 TESTANDO', cls:'testing'},
+    high: {txt:'🔥 ALTA', cls:'high'},
+    med: {txt:'🟡 MÉDIA', cls:'med'},
+    low: {txt:'🔵 BAIXA', cls:'low'},
+    adv: {txt:'🟣 AVANÇADO', cls:'adv'}
+  };
+
+  ROADMAP.forEach(fase => {
+    const feitos = fase.itens.filter(it => S.roadmapDone[it.id]).length;
+    const el = document.createElement('div');
+    el.className = 'roadmap-phase';
+    let h = `<h3>${fase.titulo}<span style="color:var(--dim);font-size:.72rem;font-weight:400">${feitos}/${fase.itens.length} concluídos</span></h3>`;
+    fase.itens.forEach(it => {
+      const isDone = !!S.roadmapDone[it.id];
+      const p = prioLabel[it.prio] || prioLabel.low;
+      h += `<div class="roadmap-item ${isDone?'done':''}" data-rm="${it.id}">
+        <div class="roadmap-check">${isDone?'✓':''}</div>
+        <div class="roadmap-title"><strong>${it.id.toUpperCase()}</strong> ${it.txt}</div>
+        <span class="roadmap-badge ${p.cls}">${p.txt}</span>
+      </div>`;
+    });
+    el.innerHTML = h;
+    wrap.appendChild(el);
+  });
+
+  $$('.roadmap-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.rm;
+      if(S.roadmapDone[id]) delete S.roadmapDone[id];
+      else S.roadmapDone[id] = true;
+      saveRoadmap();
+      renderRoadmap();
+      sClick();
+    });
+  });
+
+  const totalItens = ROADMAP.reduce((s,f)=>s+f.itens.length,0);
+  const totalDone = Object.keys(S.roadmapDone).length;
+  const totalTesting = ROADMAP.reduce((s,f)=>s+f.itens.filter(i=>i.prio==='testing').length,0);
+  const totalTodo = totalItens - totalDone;
+
+  $('#rmTotal').textContent = totalItens;
+  $('#rmDone').textContent = totalDone;
+  $('#rmTesting').textContent = totalTesting;
+  $('#rmTodo').textContent = Math.max(0,totalTodo);
+
+  const pct = totalItens ? Math.round((totalDone/totalItens)*100) : 0;
+  $('#rmProgress').style.width = pct + '%';
+
+  const badge = $('#rmBadge');
+  if(totalTodo > 0){ badge.style.display='inline-block'; badge.textContent = totalTodo; }
+  else { badge.style.display='none'; }
+}
+
+$('#rmResetChecklist').addEventListener('click',()=>{
+  if(!confirm('Zerar todo o checklist do Roadmap?')) return;
+  S.roadmapDone = {};
+  saveRoadmap();
+  renderRoadmap();
+  sOK(); toast('🔄 Checklist resetado','warn');
+});
+$('#rmMarcarFeitos').addEventListener('click',()=>{
+  if(!confirm('Marcar TODOS os itens como feitos?')) return;
+  S.roadmapDone = {};
+  ROADMAP.forEach(f => f.itens.forEach(it => { S.roadmapDone[it.id] = true; }));
+  saveRoadmap();
+  renderRoadmap();
+  sBig(); toast('✅ Tudo marcado como feito','success');
+});
+$('#rmLimparTudo').addEventListener('click',()=>{
+  if(!confirm('Desmarcar TODOS os itens?')) return;
+  S.roadmapDone = {};
+  saveRoadmap();
+  renderRoadmap();
+  sOK(); toast('⬜ Tudo desmarcado','warn');
+});
+
+/* ============================================================ MANUAL */
+const MANUAL_SECTIONS = [
+  { id:'introducao', ico:'📘', titulo:'1. Introdução' },
+  { id:'primeiros', ico:'🚀', titulo:'2. Primeiros Passos' },
+  { id:'importar', ico:'📂', titulo:'3. Importar Arquivo' },
+  { id:'banco', ico:'💾', titulo:'4. Banco de Dados' },
+  { id:'analise', ico:'📊', titulo:'5. Análise e Mapa de Calor' },
+  { id:'consulta', ico:'🔍', titulo:'6. Consulta de Resultados' },
+  { id:'fechamento', ico:'🎯', titulo:'7. Fechamento Matemático' },
+  { id:'manual-bilhete', ico:'✍️', titulo:'8. Cadastrar Bilhete MANUAL' },
+  { id:'auto-bilhete', ico:'⚡', titulo:'9. Gerar Bilhete AUTOMÁTICO' },
+  { id:'gerenciar', ico:'🛠️', titulo:'10. Editar, Remover e Exportar' },
+  { id:'conferir', ico:'🎯', titulo:'11. Conferir um Bilhete' },
+  { id:'historico', ico:'📋', titulo:'12. Histórico de Conferências' },
+  { id:'config-sec', ico:'⚙️', titulo:'13. Configurações' },
+  { id:'faq', ico:'❓', titulo:'14. Perguntas Frequentes' },
+  { id:'glossario', ico:'📖', titulo:'15. Glossário' }
+];
+
+function renderManualTOC(){
+  const el = document.getElementById('manualTocList');
+  if(!el) return;
+  let h = '<h4>◈ ÍNDICE</h4>';
+  MANUAL_SECTIONS.forEach(function(s){
+    h += '<a class="manual-toc-item" data-sec="' + s.id + '">' + s.ico + ' ' + s.titulo + '</a>';
+  });
+  el.innerHTML = h;
+  el.querySelectorAll('.manual-toc-item').forEach(function(a){
+    a.addEventListener('click', function(){
+      const tgt = document.getElementById('sec-' + a.dataset.sec);
+      if(tgt) tgt.scrollIntoView({behavior:'smooth', block:'start'});
+      if(typeof sClick === 'function') sClick();
+    });
+  });
+}
+
+function renderManualContent(){
+  const c = document.getElementById('manualContent');
+  if(!c) return;
+  const H = [];
+
+  H.push('<section id="sec-introducao">');
+  H.push('<h1>📘 LOTTERY PRO — Manual do Usuário</h1>');
+  H.push('<p><strong>Versão:</strong> Completa · <strong>Atualização:</strong> ' + new Date().toLocaleDateString('pt-BR') + '</p>');
+  H.push('<p>O <strong>LOTTERY PRO</strong> é um sistema completo para análise, geração, cadastro e conferência de apostas da Lotofácil.</p>');
+  H.push('<h3>O que você pode fazer</h3>');
+  H.push('<ul><li>📂 <strong>Importar</strong> histórico completo (.xlsx)</li><li>📊 <strong>Analisar</strong> frequências, atrasos, mapa de calor</li><li>🔍 <strong>Consultar</strong> se resultado já saiu antes</li><li>🎯 <strong>Gerar fechamentos</strong> matemáticos</li><li>✍️ <strong>Cadastrar</strong> bilhetes que você apostou</li><li>🏆 <strong>Conferir</strong> e ver quanto ganhou/perdeu</li></ul>');
+  H.push('<div class="hint"><strong>💡 Importante:</strong> o sistema <strong>não aposta por você</strong>. Ele organiza, calcula e confere.</div>');
+  H.push('</section>');
+
+  H.push('<section id="sec-primeiros">');
+  H.push('<h1>🚀 Primeiros Passos</h1>');
+  H.push('<p>Siga estes 3 passos na ordem:</p>');
+  H.push('<div class="step-block"><div class="step-num-manual">1</div><div class="step-body"><strong>Importar o histórico</strong>Arraste o <code>Lotofácil.xlsx</code> em <strong>Importar Arquivo</strong>.</div></div>');
+  H.push('<div class="step-block"><div class="step-num-manual">2</div><div class="step-body"><strong>Cadastrar suas apostas</strong>Vá em <strong>Bilhetes → ✍️ Cadastrar Manual</strong> e digite as 15 dezenas.</div></div>');
+  H.push('<div class="step-block"><div class="step-num-manual">3</div><div class="step-body"><strong>Conferir</strong>Clique em <strong>🎯 Conferir</strong> em cada concurso.</div></div>');
+  H.push('</section>');
+
+  H.push('<section id="sec-importar">');
+  H.push('<h1>📂 Importar Arquivo</h1>');
+  H.push('<p>O sistema aceita <code>XLSX</code>, <code>XLS</code>, <code>CSV</code> e <code>TXT</code>.</p>');
+  H.push('<div class="hint lime"><strong>✅ Dica:</strong> o sistema detecta automaticamente a coluna de <strong>data</strong>.</div>');
+  H.push('</section>');
+
+  H.push('<section id="sec-banco">');
+  H.push('<h1>💾 Banco de Dados</h1>');
+  H.push('<p>Aqui ficam todos os concursos importados com datas, dezenas e soma.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-analise">');
+  H.push('<h1>📊 Análise e Mapa de Calor</h1>');
+  H.push('<p>Painel estilo Dezeneiro com Top 10 mais sorteadas, seca de sorteios e seletor de períodos (Completo, 100, 30 e 2026).</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-consulta">');
+  H.push('<h1>🔍 Consulta de Resultados</h1>');
+  H.push('<p>3 abas: Por Dezenas, Por Concurso e Varredura Global.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-fechamento">');
+  H.push('<h1>🎯 Fechamento Matemático</h1>');
+  H.push('<p>Fechamento de 15 a 20 dezenas com garantia de 14 pontos.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-manual-bilhete">');
+  H.push('<h1>✍️ Cadastrar Bilhete MANUAL</h1>');
+  H.push('<p>Cadastre bilhetes reais jogados na lotérica com data automática puxada do banco.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-auto-bilhete">');
+  H.push('<h1>⚡ Gerar Bilhete AUTOMÁTICO</h1>');
+  H.push('<p>Geração de sugestões estatísticas (Aleatório, Ponderado, Quentes, Frias, Balanceado).</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-gerenciar">');
+  H.push('<h1>🛠️ Editar, Remover e Exportar</h1>');
+  H.push('<p>Use os botões de lápis (editar) e lixeira (remover) em cada bilhete ou concurso.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-conferir">');
+  H.push('<h1>🎯 Conferir um Bilhete</h1>');
+  H.push('<p>O sistema puxa o resultado sorteado direto do banco de dados automaticamente.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-historico">');
+  H.push('<h1>📋 Histórico de Conferências</h1>');
+  H.push('<p>Controle financeiro de investimento, prêmios recebidos e saldo.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-config-sec">');
+  H.push('<h1>⚙️ Configurações</h1>');
+  H.push('<p>Alternância de tema (Claro/Escuro) e 5 opções de fonte.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-faq">');
+  H.push('<h1>❓ Perguntas Frequentes</h1>');
+  H.push('<h3>Onde ficam meus dados?</h3><p>No localStorage do navegador Chrome.</p>');
+  H.push('</section>');
+
+  H.push('<section id="sec-glossario">');
+  H.push('<h1>📖 Glossário</h1>');
+  H.push('<h3>Dezena</h3><p>Cada um dos 25 números disponíveis na Lotofácil.</p>');
+  H.push('</section>');
+
+  c.innerHTML = H.join('');
+}
+
+(function initManualButtons(){
+  const btnPrint = document.getElementById('manualPrint');
+  if(btnPrint) btnPrint.addEventListener('click', () => window.print());
+  const btnTOC = document.getElementById('manualTOC');
+  if(btnTOC) btnTOC.addEventListener('click', () => {
+    const toc = document.getElementById('manualTocList');
+    if(toc) toc.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  const search = document.getElementById('manualSearch');
+  if(search) search.addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('.manual-toc-item').forEach(it => {
+      it.style.display = (!q || it.textContent.toLowerCase().includes(q)) ? 'block' : 'none';
+    });
+  });
+})();
+
+/* ============================================================ BOOT */
+(function boot(){
+  loadConf();
+  loadRoadmap();
+  if(loadDB()){
+    renderAll();
+    toast(`📂 Banco restaurado · ${S.db.length}`,'success');
+    setTimeout(sOK,200);
+  } else {
+    toast('◈ Importe o Lotofácil.xlsx para começar','warn');
+  }
+  if(loadLote()){
+    if(S.lote.length){
+      renderLote();
+      let tk=0;S.lote.forEach(g=>tk+=g.bilhetes.length);
+      $('#bTotal').textContent=tk;
+      const cs=parseFloat($('#bCost').value)||3.5;
+      $('#bCusto').textContent=fmt(tk*cs);
+      if(S.lote[0]){
+        $('#bConcIni').value=S.lote[0].concurso;
+        $('#bConc').value=S.lote.length;
+        if(S.lote[0].bilhetes[0])$('#bSize').value=S.lote[0].bilhetes[0].length;
+        $('#bPer').value=S.lote[0].bilhetes.length;
+      }
+      toast(`📂 Lote restaurado · ${S.lote.length} concursos`,'success');
+    }
+  }
+  renderConfHistory();
+  updateBadge();
+  updateDash();
+  renderQueryRange();
+  renderRoadmap();
+  renderManualTOC();
+  renderManualContent();
+})();
+</script>
+</body>
+</html>
